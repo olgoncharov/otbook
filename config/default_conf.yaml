@@ -1,0 +1,17 @@
+database:
+  host: "localhost"
+  port: "3306"
+  user: "admin"
+  password: "admin"
+  db_name: "otbook"
+
+jwt:
+  access_token_ttl: 3600
+  refresh_token_ttl: 108000
+  signing_key: nnUdOVjyvgtsTUPguUrm
+
+password:
+  hash_generation_cost: 5
+
+http:
+  server_addr: ":8000"
