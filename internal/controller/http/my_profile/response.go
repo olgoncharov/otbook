@@ -1,15 +1,3 @@
-package myprofile
-
-import (
-	"github.com/olgoncharov/otbook/internal/pkg/types"
-)
-
-type response struct {
-	Username  string     `json:"username"`
-	FirstName string     `json:"firstName"`
-	LastName  string     `json:"lastName"`
-	Birthdate types.Date `json:"birthdate"`
-	City      string     `json:"city"`
-	Sex       string     `json:"sex"`
-	Hobby     string     `json:"hobby"`
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:fb2894820f68d91c2789dbad1440ef37c609fc127b10dd131baadcc8292f7942
+size 378
