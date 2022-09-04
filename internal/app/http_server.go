@@ -13,6 +13,7 @@ import (
 	myprofile "github.com/olgoncharov/otbook/internal/controller/http/my_profile"
 	"github.com/olgoncharov/otbook/internal/controller/http/profile"
 	profileslist "github.com/olgoncharov/otbook/internal/controller/http/profiles_list"
+	profilesSearch "github.com/olgoncharov/otbook/internal/controller/http/profiles_search"
 	refreshtoken "github.com/olgoncharov/otbook/internal/controller/http/refresh_token"
 	"github.com/olgoncharov/otbook/internal/controller/http/signup"
 	"github.com/olgoncharov/otbook/internal/pkg/jwt"
@@ -50,6 +51,11 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 		"/profiles",
 		profileslist.NewController(uc.profilesList, logger.With().Str("path", "/profiles").Logger()),
 	).Methods(http.MethodGet)
+
+	subRouterNoAuth.Handle(
+		"/profiles/search",
+		profilesSearch.NewController(uc.profilesSearch, logger.With().Str("path", "/profiles/search").Logger()),
+	).Methods(http.MethodPost)
 
 	subRouterNoAuth.Handle(
 		"/profiles/{username}",

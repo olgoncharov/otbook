@@ -1,4 +1,4 @@
-package profileslist
+package profilessearch
 
 import (
 	"context"
@@ -8,14 +8,15 @@ import (
 	"github.com/olgoncharov/otbook/internal/controller/http/utils"
 	"github.com/olgoncharov/otbook/internal/entity"
 	"github.com/olgoncharov/otbook/internal/pkg/types"
-	list "github.com/olgoncharov/otbook/internal/usecase/profile/query/full_list"
+	"github.com/olgoncharov/otbook/internal/usecase/profile/query/search"
 	"github.com/rs/zerolog"
 )
 
 type (
 	useCase interface {
-		Handle(ctx context.Context, query list.Query) (*list.Result, error)
+		Handle(ctx context.Context, query search.Query) ([]entity.Profile, error)
 	}
+
 	Controller struct {
 		useCase useCase
 		logger  zerolog.Logger
@@ -30,11 +31,28 @@ func NewController(uCase useCase, logger zerolog.Logger) *Controller {
 }
 
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	limit, offset := utils.GetLimitOffsetFromURL(r.URL)
+	bodyDecoder := jsoniter.NewDecoder(r.Body)
+	body := &requestBody{}
+	err := bodyDecoder.Decode(body)
 
-	result, err := c.useCase.Handle(r.Context(), list.Query{
-		Limit:  limit,
-		Offset: offset,
+	if err != nil {
+		c.logger.Error().Err(err).Msg("")
+		utils.WriteJSONError(w, "invalid request body", http.StatusBadRequest)
+
+		return
+	}
+
+	err = body.validate()
+	if err != nil {
+		c.logger.Error().Err(err).Msg("")
+		utils.WriteJSONError(w, err.Error(), http.StatusBadRequest)
+
+		return
+	}
+
+	foundProfiles, err := c.useCase.Handle(r.Context(), search.Query{
+		FirstNamePrefix: body.FirstName,
+		LastNamePrefix:  body.LastName,
 	})
 
 	if err != nil {
@@ -44,13 +62,10 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := response{
-		List:       make([]profileInfo, len(result.Profiles)),
-		TotalCount: result.TotalCount,
-	}
+	resp := make([]profileInfo, len(foundProfiles))
 
-	for i, p := range result.Profiles {
-		resp.List[i] = convertDomainProfileToResponse(p)
+	for i, p := range foundProfiles {
+		resp[i] = convertDomainProfileToResponse(p)
 	}
 
 	responseEncoder := jsoniter.NewEncoder(w)

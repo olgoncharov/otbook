@@ -12,7 +12,8 @@ import (
 	friendsList "github.com/olgoncharov/otbook/internal/usecase/friends/query/list"
 	"github.com/olgoncharov/otbook/internal/usecase/profile/command/create"
 	updateUserProfile "github.com/olgoncharov/otbook/internal/usecase/profile/command/update"
-	profilesList "github.com/olgoncharov/otbook/internal/usecase/profile/query/list"
+	profilesList "github.com/olgoncharov/otbook/internal/usecase/profile/query/full_list"
+	profilesSearch "github.com/olgoncharov/otbook/internal/usecase/profile/query/search"
 	getUserProfile "github.com/olgoncharov/otbook/internal/usecase/profile/query/user_profile"
 )
 
@@ -23,6 +24,7 @@ type useCases struct {
 	getUserProfile    *getUserProfile.Handler
 	updateUserProfile *updateUserProfile.Handler
 	profilesList      *profilesList.Handler
+	profilesSearch    *profilesSearch.Handler
 	friendsList       *friendsList.Handler
 	becomeFriends     *becomeFriends.Handler
 }
@@ -42,6 +44,7 @@ func initUsecases(
 		getUserProfile:    getUserProfile.NewHandler(repo),
 		updateUserProfile: updateUserProfile.NewHandler(repo),
 		profilesList:      profilesList.NewHandler(repo),
+		profilesSearch:    profilesSearch.NewHandler(repo),
 		friendsList:       friendsList.NewHandler(repo),
 		becomeFriends:     becomeFriends.NewHandler(repo, repo),
 	}
