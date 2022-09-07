@@ -218,23 +218,18 @@ func (r *Repository) CheckUsersExistence(ctx context.Context, usernames ...strin
 	return result, nil
 }
 
-func (r *Repository) SearchProfiles(ctx context.Context, firstNamePrefix, lastNamePrefix string) ([]entity.Profile, error) {
-	profiles := make([]entity.Profile, 0)
+func (r *Repository) SearchProfiles(ctx context.Context, firstNamePrefix, lastNamePrefix string) ([]dto.ProfileShortInfo, error) {
+	profiles := make([]dto.ProfileShortInfo, 0)
 
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT
 			user,
 			first_name,
-			last_name,
-			birthdate,
-			city,
-			sex,
-			hobby
+			last_name
 		FROM profiles
 		WHERE
 			first_name LIKE ? AND
-			last_name LIKE ?
-		ORDER BY user`,
+			last_name LIKE ?`,
 		firstNamePrefix+"%",
 		lastNamePrefix+"%",
 	)
@@ -246,15 +241,11 @@ func (r *Repository) SearchProfiles(ctx context.Context, firstNamePrefix, lastNa
 	defer rows.Close()
 
 	for rows.Next() {
-		var profile entity.Profile
+		var profile dto.ProfileShortInfo
 		err = rows.Scan(
 			&profile.Username,
 			&profile.FirstName,
 			&profile.LastName,
-			&profile.Birthdate,
-			&profile.City,
-			&profile.Sex,
-			&profile.Hobby,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("SearchProfiles: %w", err)

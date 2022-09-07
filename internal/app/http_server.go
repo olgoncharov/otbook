@@ -16,6 +16,7 @@ import (
 	profilesSearch "github.com/olgoncharov/otbook/internal/controller/http/profiles_search"
 	refreshtoken "github.com/olgoncharov/otbook/internal/controller/http/refresh_token"
 	"github.com/olgoncharov/otbook/internal/controller/http/signup"
+	"github.com/olgoncharov/otbook/internal/controller/http/utils"
 	"github.com/olgoncharov/otbook/internal/pkg/jwt"
 	"github.com/rs/cors"
 	"github.com/rs/zerolog"
@@ -26,6 +27,8 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 		Timestamp().
 		Str("component", "http").
 		Logger()
+
+	linkBuilder := utils.NewLinkBuilder("http", "/api/v1/profiles/%s")
 
 	tokenValidator := jwt.NewTokenValidator(cfg)
 	jwtMiddleware := middleware.NewJWTMiddleware(tokenValidator, logger)
@@ -54,7 +57,7 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 
 	subRouterNoAuth.Handle(
 		"/profiles/search",
-		profilesSearch.NewController(uc.profilesSearch, logger.With().Str("path", "/profiles/search").Logger()),
+		profilesSearch.NewController(uc.profilesSearch, linkBuilder, logger.With().Str("path", "/profiles/search").Logger()),
 	).Methods(http.MethodPost)
 
 	subRouterNoAuth.Handle(

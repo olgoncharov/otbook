@@ -173,9 +173,24 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Profile'
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                        links:
+                          type: object
+                          properties:
+                            self:
+                              type: string
         400:
           description: Ошибка
           content:

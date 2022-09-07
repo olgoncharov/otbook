@@ -11,14 +11,14 @@ import (
 	mm_time "time"
 
 	"github.com/gojuno/minimock/v3"
-	"github.com/olgoncharov/otbook/internal/entity"
+	"github.com/olgoncharov/otbook/internal/repository/dto"
 )
 
 // ProfileRepoMock implements search.profileRepo
 type ProfileRepoMock struct {
 	t minimock.Tester
 
-	funcSearchProfiles          func(ctx context.Context, firstNamePrefix string, lastNamePrefix string) (pa1 []entity.Profile, err error)
+	funcSearchProfiles          func(ctx context.Context, firstNamePrefix string, lastNamePrefix string) (pa1 []dto.ProfileShortInfo, err error)
 	inspectFuncSearchProfiles   func(ctx context.Context, firstNamePrefix string, lastNamePrefix string)
 	afterSearchProfilesCounter  uint64
 	beforeSearchProfilesCounter uint64
@@ -64,7 +64,7 @@ type ProfileRepoMockSearchProfilesParams struct {
 
 // ProfileRepoMockSearchProfilesResults contains results of the profileRepo.SearchProfiles
 type ProfileRepoMockSearchProfilesResults struct {
-	pa1 []entity.Profile
+	pa1 []dto.ProfileShortInfo
 	err error
 }
 
@@ -100,7 +100,7 @@ func (mmSearchProfiles *mProfileRepoMockSearchProfiles) Inspect(f func(ctx conte
 }
 
 // Return sets up results that will be returned by profileRepo.SearchProfiles
-func (mmSearchProfiles *mProfileRepoMockSearchProfiles) Return(pa1 []entity.Profile, err error) *ProfileRepoMock {
+func (mmSearchProfiles *mProfileRepoMockSearchProfiles) Return(pa1 []dto.ProfileShortInfo, err error) *ProfileRepoMock {
 	if mmSearchProfiles.mock.funcSearchProfiles != nil {
 		mmSearchProfiles.mock.t.Fatalf("ProfileRepoMock.SearchProfiles mock is already set by Set")
 	}
@@ -113,7 +113,7 @@ func (mmSearchProfiles *mProfileRepoMockSearchProfiles) Return(pa1 []entity.Prof
 }
 
 //Set uses given function f to mock the profileRepo.SearchProfiles method
-func (mmSearchProfiles *mProfileRepoMockSearchProfiles) Set(f func(ctx context.Context, firstNamePrefix string, lastNamePrefix string) (pa1 []entity.Profile, err error)) *ProfileRepoMock {
+func (mmSearchProfiles *mProfileRepoMockSearchProfiles) Set(f func(ctx context.Context, firstNamePrefix string, lastNamePrefix string) (pa1 []dto.ProfileShortInfo, err error)) *ProfileRepoMock {
 	if mmSearchProfiles.defaultExpectation != nil {
 		mmSearchProfiles.mock.t.Fatalf("Default expectation is already set for the profileRepo.SearchProfiles method")
 	}
@@ -142,13 +142,13 @@ func (mmSearchProfiles *mProfileRepoMockSearchProfiles) When(ctx context.Context
 }
 
 // Then sets up profileRepo.SearchProfiles return parameters for the expectation previously defined by the When method
-func (e *ProfileRepoMockSearchProfilesExpectation) Then(pa1 []entity.Profile, err error) *ProfileRepoMock {
+func (e *ProfileRepoMockSearchProfilesExpectation) Then(pa1 []dto.ProfileShortInfo, err error) *ProfileRepoMock {
 	e.results = &ProfileRepoMockSearchProfilesResults{pa1, err}
 	return e.mock
 }
 
 // SearchProfiles implements search.profileRepo
-func (mmSearchProfiles *ProfileRepoMock) SearchProfiles(ctx context.Context, firstNamePrefix string, lastNamePrefix string) (pa1 []entity.Profile, err error) {
+func (mmSearchProfiles *ProfileRepoMock) SearchProfiles(ctx context.Context, firstNamePrefix string, lastNamePrefix string) (pa1 []dto.ProfileShortInfo, err error) {
 	mm_atomic.AddUint64(&mmSearchProfiles.beforeSearchProfilesCounter, 1)
 	defer mm_atomic.AddUint64(&mmSearchProfiles.afterSearchProfilesCounter, 1)
 

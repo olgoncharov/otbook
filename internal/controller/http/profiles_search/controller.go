@@ -6,27 +6,31 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/olgoncharov/otbook/internal/controller/http/utils"
-	"github.com/olgoncharov/otbook/internal/entity"
-	"github.com/olgoncharov/otbook/internal/pkg/types"
 	"github.com/olgoncharov/otbook/internal/usecase/profile/query/search"
 	"github.com/rs/zerolog"
 )
 
 type (
 	useCase interface {
-		Handle(ctx context.Context, query search.Query) ([]entity.Profile, error)
+		Handle(ctx context.Context, query search.Query) ([]search.ProfileInfo, error)
+	}
+
+	linkBuilder interface {
+		BuildProfileLink(host, username string) string
 	}
 
 	Controller struct {
-		useCase useCase
-		logger  zerolog.Logger
+		useCase     useCase
+		linkBuilder linkBuilder
+		logger      zerolog.Logger
 	}
 )
 
-func NewController(uCase useCase, logger zerolog.Logger) *Controller {
+func NewController(uCase useCase, lBuilder linkBuilder, logger zerolog.Logger) *Controller {
 	return &Controller{
-		useCase: uCase,
-		logger:  logger,
+		useCase:     uCase,
+		linkBuilder: lBuilder,
+		logger:      logger,
 	}
 }
 
@@ -62,24 +66,21 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := make([]profileInfo, len(foundProfiles))
+	resp := response{
+		List: make([]profileInfo, len(foundProfiles)),
+	}
 
 	for i, p := range foundProfiles {
-		resp[i] = convertDomainProfileToResponse(p)
+		resp.List[i] = profileInfo{
+			Username:  p.Username,
+			FirstName: p.FirstName,
+			LastName:  p.LastName,
+			Links: profileLinks{
+				Self: c.linkBuilder.BuildProfileLink(r.Host, p.Username),
+			},
+		}
 	}
 
 	responseEncoder := jsoniter.NewEncoder(w)
 	responseEncoder.Encode(resp)
-}
-
-func convertDomainProfileToResponse(domainProfile entity.Profile) profileInfo {
-	return profileInfo{
-		Username:  domainProfile.Username,
-		FirstName: domainProfile.FirstName,
-		LastName:  domainProfile.LastName,
-		Birthdate: types.Date{Time: domainProfile.Birthdate},
-		City:      domainProfile.City,
-		Sex:       domainProfile.Sex,
-		Hobby:     domainProfile.Hobby,
-	}
 }

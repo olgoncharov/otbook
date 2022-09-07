@@ -1,13 +1,18 @@
 package profilessearch
 
-import "github.com/olgoncharov/otbook/internal/pkg/types"
+type (
+	profileLinks struct {
+		Self string `json:"self"`
+	}
 
-type profileInfo struct {
-	Username  string     `json:"username"`
-	FirstName string     `json:"firstName"`
-	LastName  string     `json:"lastName"`
-	Birthdate types.Date `json:"birthdate"`
-	City      string     `json:"city"`
-	Sex       string     `json:"sex"`
-	Hobby     string     `json:"hobby"`
-}
+	profileInfo struct {
+		Username  string       `json:"username"`
+		FirstName string       `json:"firstName"`
+		LastName  string       `json:"lastName"`
+		Links     profileLinks `json:"links"`
+	}
+
+	response struct {
+		List []profileInfo
+	}
+)

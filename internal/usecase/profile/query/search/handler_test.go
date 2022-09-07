@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gojuno/minimock/v3"
-	"github.com/olgoncharov/otbook/internal/entity"
+	"github.com/olgoncharov/otbook/internal/repository/dto"
 	"github.com/olgoncharov/otbook/internal/usecase/profile/query/search/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,15 +35,6 @@ func TestHandler_Handle(t *testing.T) {
 
 	var (
 		ctx = context.Background()
-
-		profiles = []entity.Profile{
-			{Username: "test-user-1"},
-			{Username: "test-user-2"},
-			{Username: "test-user-3"},
-			{Username: "test-user-4"},
-			{Username: "test-user-5"},
-			{Username: "test-user-6"},
-		}
 	)
 
 	t.Run("normal case", func(t *testing.T) {
@@ -53,14 +44,28 @@ func TestHandler_Handle(t *testing.T) {
 		h := newTestHandler(mc)
 		h.repoMock.SearchProfilesMock.
 			Expect(ctx, firstNamePrefix, lastNamePrefix).
-			Return(profiles, nil)
+			Return([]dto.ProfileShortInfo{
+				{Username: "test-user-1"},
+				{Username: "test-user-2"},
+				{Username: "test-user-3"},
+				{Username: "test-user-4"},
+				{Username: "test-user-5"},
+				{Username: "test-user-6"},
+			}, nil)
 
 		actualResult, err := h.Handle(ctx, Query{
 			FirstNamePrefix: firstNamePrefix,
 			LastNamePrefix:  lastNamePrefix,
 		})
 		require.NoError(t, err)
-		assert.ElementsMatch(t, profiles, actualResult)
+		assert.ElementsMatch(t, []ProfileInfo{
+			{Username: "test-user-1"},
+			{Username: "test-user-2"},
+			{Username: "test-user-3"},
+			{Username: "test-user-4"},
+			{Username: "test-user-5"},
+			{Username: "test-user-6"},
+		}, actualResult)
 	})
 
 	t.Run("repository returns error", func(t *testing.T) {
