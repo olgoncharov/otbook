@@ -1,4 +1,4 @@
-package list
+package fulllist
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/gojuno/minimock/v3"
 	"github.com/olgoncharov/otbook/internal/entity"
-	"github.com/olgoncharov/otbook/internal/usecase/profile/query/list/mocks"
+	"github.com/olgoncharov/otbook/internal/usecase/profile/query/full_list/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

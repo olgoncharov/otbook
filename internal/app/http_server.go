@@ -3,7 +3,6 @@ package app
 import (
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gorilla/mux"
 	friends "github.com/olgoncharov/otbook/internal/controller/http/friends"
@@ -13,8 +12,10 @@ import (
 	myprofile "github.com/olgoncharov/otbook/internal/controller/http/my_profile"
 	"github.com/olgoncharov/otbook/internal/controller/http/profile"
 	profileslist "github.com/olgoncharov/otbook/internal/controller/http/profiles_list"
+	profilesSearch "github.com/olgoncharov/otbook/internal/controller/http/profiles_search"
 	refreshtoken "github.com/olgoncharov/otbook/internal/controller/http/refresh_token"
 	"github.com/olgoncharov/otbook/internal/controller/http/signup"
+	"github.com/olgoncharov/otbook/internal/controller/http/utils"
 	"github.com/olgoncharov/otbook/internal/pkg/jwt"
 	"github.com/rs/cors"
 	"github.com/rs/zerolog"
@@ -25,6 +26,8 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 		Timestamp().
 		Str("component", "http").
 		Logger()
+
+	linkBuilder := utils.NewLinkBuilder("http", "/api/v1/profiles/%s")
 
 	tokenValidator := jwt.NewTokenValidator(cfg)
 	jwtMiddleware := middleware.NewJWTMiddleware(tokenValidator, logger)
@@ -52,6 +55,11 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 	).Methods(http.MethodGet)
 
 	subRouterNoAuth.Handle(
+		"/profiles/search",
+		profilesSearch.NewController(uc.profilesSearch, linkBuilder, logger.With().Str("path", "/profiles/search").Logger()),
+	).Methods(http.MethodPost)
+
+	subRouterNoAuth.Handle(
 		"/profiles/{username}",
 		profile.NewController(uc.getUserProfile, logger.With().Str("path", "/profiles/{username}").Logger()),
 	).Methods(http.MethodGet)
@@ -77,10 +85,7 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 	).Methods(http.MethodGet, http.MethodPost)
 
 	return &http.Server{
-		Addr:         cfg.HTTPServerAddr(),
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-
+		Addr:    cfg.HTTPServerAddr(),
 		Handler: cors.AllowAll().Handler(router),
 	}
 }

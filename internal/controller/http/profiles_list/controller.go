@@ -8,7 +8,7 @@ import (
 	"github.com/olgoncharov/otbook/internal/controller/http/utils"
 	"github.com/olgoncharov/otbook/internal/entity"
 	"github.com/olgoncharov/otbook/internal/pkg/types"
-	"github.com/olgoncharov/otbook/internal/usecase/profile/query/list"
+	list "github.com/olgoncharov/otbook/internal/usecase/profile/query/full_list"
 	"github.com/rs/zerolog"
 )
 
