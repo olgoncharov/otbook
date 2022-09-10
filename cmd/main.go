@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ba803079493e3484db7241a193aa48022428d5cbc858e7f27aadea6c2e2ac56a
-size 521
+package main
+
+import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/olgoncharov/otbook/config"
+	"github.com/olgoncharov/otbook/internal/app"
+	"github.com/rs/zerolog/log"
+)
+
+func main() {
+	ctx := context.Background()
+
+	cfg, err := config.NewDefaultConfig()
+	if err != nil {
+		log.Fatal().Msgf("can't read config: %s", err.Error())
+	}
+
+	a := app.NewApp(cfg)
+	a.Run()
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+	<-sig
+	a.Shutdown(ctx)
+}

@@ -1,3 +1,45 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c4cee6e85802bba66fae95ff5d642ce6e7c0debc2594ac3a830f97b1e4759fc5
-size 857
+package myprofile
+
+import (
+	"github.com/olgoncharov/otbook/internal/pkg/errgroup"
+	"github.com/olgoncharov/otbook/internal/pkg/types"
+)
+
+type requestBody struct {
+	FirstName string     `json:"firstName"`
+	LastName  string     `json:"lastName"`
+	Birthdate types.Date `json:"birthDate"`
+	City      string     `json:"city"`
+	Sex       string     `json:"sex"`
+	Hobby     string     `json:"hobby"`
+}
+
+func (r *requestBody) validate() error {
+	eg := errgroup.NewErrorGroup("\n")
+
+	if r.FirstName == "" {
+		eg.AddErrorText("empty first name")
+	}
+
+	if r.LastName == "" {
+		eg.AddErrorText("empty last name")
+	}
+
+	if r.Birthdate.IsZero() {
+		eg.AddErrorText("empty birthdate")
+	}
+
+	if r.City == "" {
+		eg.AddErrorText("empty city")
+	}
+
+	if r.Sex == "" {
+		eg.AddErrorText("empty sex")
+	}
+
+	if r.Hobby == "" {
+		eg.AddErrorText("empty hobby")
+	}
+
+	return eg.Err()
+}

@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b74b4d6b11552dc014f84c7f9f3069674391407dcd20370ff53663f91208dc89
-size 565
+package login
+
+import (
+	"context"
+
+	repoDTO "github.com/olgoncharov/otbook/internal/repository/dto"
+)
+
+type (
+	userRepo interface {
+		GetPasswordHashByUsername(ctx context.Context, username string) (string, error)
+		ReplaceRefreshToken(ctx context.Context, username string, newToken repoDTO.RefreshToken) error
+	}
+
+	passwordChecker interface {
+		Check(input, hash string) (bool, error)
+	}
+
+	tokenGenerator interface {
+		GenerateAccessToken(username string) (string, error)
+		GenerateRefreshToken() string
+	}
+
+	config interface {
+		JWTRefreshTokenTTL() uint64
+	}
+)

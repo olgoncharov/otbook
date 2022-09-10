@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:76e7948a419dbf47e0f21bb8074e9186f3cff33a5ef4688fb36526efed01ba97
-size 418
+package utils
+
+import "context"
+
+var (
+	usernameContextKey = struct{}{}
+)
+
+func AddUsernameToContext(ctx context.Context, username string) context.Context {
+	return context.WithValue(ctx, usernameContextKey, username)
+}
+
+func GetUsernameFromContext(ctx context.Context) string {
+	v := ctx.Value(usernameContextKey)
+	if v == nil {
+		return ""
+	}
+
+	if username, ok := v.(string); ok {
+		return username
+	}
+
+	return ""
+}

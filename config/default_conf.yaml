@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:99ecf42931a82bb26ddff220ebd8b1f1884119b7c599b09d5fe899df69b9ef23
-size 263
+database:
+  host: "localhost"
+  port: "3306"
+  user: "admin"
+  password: "admin"
+  db_name: "otbook"
+
+jwt:
+  access_token_ttl: 3600
+  refresh_token_ttl: 108000
+  signing_key: nnUdOVjyvgtsTUPguUrm
+
+password:
+  hash_generation_cost: 5
+
+http:
+  server_addr: ":8000"

@@ -1,3 +1,20 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:05b190793d044c4396c1a41e5ce0631f1dc0b78b36d312ccada6e8e760dc1b10
-size 496
+package profileslist
+
+import (
+	"github.com/olgoncharov/otbook/internal/pkg/types"
+)
+
+type profileInfo struct {
+	Username  string     `json:"username"`
+	FirstName string     `json:"firstName"`
+	LastName  string     `json:"lastName"`
+	Birthdate types.Date `json:"birthdate"`
+	City      string     `json:"city"`
+	Sex       string     `json:"sex"`
+	Hobby     string     `json:"hobby"`
+}
+
+type response struct {
+	List       []profileInfo `json:"list"`
+	TotalCount uint          `json:"totalCount"`
+}

@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0b893774fe1afb1abd5697a84eeadd2cc19ed6750007693f004e753bfccd3740
-size 274
+#!/bin/sh
+
+function migrate {
+./bin/goose -dir ./migrations mysql "${DB_USER}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}?parseTime=true" up
+}
+
+NEXT_WAIT_TIME=1
+until [ $NEXT_WAIT_TIME -eq 15 || migrate ]; do
+    sleep $(( NEXT_WAIT_TIME++ ))
+done
+
+exec /bin/otbook

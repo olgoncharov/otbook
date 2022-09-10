@@ -1,3 +1,20 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6c54432d82aa75b5a6fa027f8a1d6f10740fe1d557c7af1e6fbf4b94db8ca54a
-size 494
+package friends
+
+import (
+	"github.com/olgoncharov/otbook/internal/pkg/types"
+)
+
+type profileInfo struct {
+	Username  string     `json:"username"`
+	FirstName string     `json:"firstName"`
+	LastName  string     `json:"lastName"`
+	Birthdate types.Date `json:"birthdate"`
+	City      string     `json:"city"`
+	Sex       string     `json:"sex"`
+	Hobby     string     `json:"hobby"`
+}
+
+type getResponse struct {
+	List       []profileInfo `json:"list"`
+	TotalCount uint          `json:"totalCount"`
+}

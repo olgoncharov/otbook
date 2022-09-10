@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d6f744a89310f3c2316cf16fbc8997f49ff340db21838d3b161173a5ef17f1ae
-size 388
+package hash
+
+import (
+	"golang.org/x/crypto/bcrypt"
+)
+
+type HashGenerator struct {
+	cost int
+}
+
+func NewHashGenerator(cost int) *HashGenerator {
+	return &HashGenerator{
+		cost: cost,
+	}
+}
+
+func (h *HashGenerator) Hash(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), h.cost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hash), nil
+}

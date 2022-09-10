@@ -1,3 +1,43 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f5c25e6c56bf2e51749eaeb9be27258251cad7952cb2c44f2703fbb4d0bf123f
-size 786
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0.29
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "otbook"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+      TZ: "Europe/Moscow"
+  
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - 8080:8080
+
+  backend:
+    build:
+      context: .
+      dockerfile: build/docker/Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      DB_HOST: "db"
+      DB_PORT: 3306
+      DB_USER: "admin"
+      DB_PASSWORD: "admin"
+      DB_NAME: "otbook"
+    depends_on:
+      - db
+    restart: always
+
+  swagger_ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - 7000:8080
+    environment:
+      API_URL: doc/otbook.yaml
+    volumes:
+      - ./api:/usr/share/nginx/html/doc

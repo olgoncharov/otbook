@@ -1,3 +1,22 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1de220e915dae0426e75ff23596f224a895e509be1cbeb321cb0d069240fabda
-size 397
+FROM golang:1.18-alpine
+
+WORKDIR /app
+RUN mkdir bin
+ENV GOBIN /app/bin
+
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+RUN go install github.com/pressly/goose/v3/cmd/goose@v3.6.1
+
+COPY build/docker/entrypoint.sh .
+COPY cmd/ cmd/
+COPY config/ config/
+COPY migrations/ migrations/
+COPY internal/ internal/
+
+RUN go build -o /bin/otbook ./cmd/main.go
+
+EXPOSE 8000
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]

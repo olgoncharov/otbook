@@ -1,3 +1,24 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9ce77a54897315fb83b7205dfb920582be0908268285dff5a7f829af36ea79af
-size 582
+package refreshtoken
+
+import (
+	"context"
+
+	repoDTO "github.com/olgoncharov/otbook/internal/repository/dto"
+)
+
+type (
+	tokenRepo interface {
+		GetRefreshTokenForUser(ctx context.Context, username string) (*repoDTO.RefreshToken, error)
+		DeleteRefreshTokenForUser(ctx context.Context, username string) error
+		ReplaceRefreshToken(ctx context.Context, username string, newToken repoDTO.RefreshToken) error
+	}
+
+	tokenGenerator interface {
+		GenerateAccessToken(username string) (string, error)
+		GenerateRefreshToken() string
+	}
+
+	config interface {
+		JWTRefreshTokenTTL() uint64
+	}
+)

@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:11b69177cc3d6c04532680e468a1c34c63e6663aa8ff9b937a23d2e4f7c19ba5
-size 432
+package hash
+
+import (
+	"errors"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+type HashChecker struct{}
+
+func NewHashChecker() *HashChecker {
+	return &HashChecker{}
+}
+
+func (c *HashChecker) Check(input, hash string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(input))
+
+	if err == nil {
+		return true, nil
+	}
+
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return false, nil
+	}
+
+	return false, err
+}
