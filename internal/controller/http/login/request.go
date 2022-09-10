@@ -1,22 +1,3 @@
-package login
-
-import (
-	"errors"
-)
-
-type requestBody struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-func (r *requestBody) validate() error {
-	if r.Username == "" {
-		return errors.New("empty username")
-	}
-
-	if r.Password == "" {
-		return errors.New("empty password")
-	}
-
-	return nil
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9d4a883484dada46d291932b0e27b662f45ca1e61e0c8851817a656952504464
+size 321

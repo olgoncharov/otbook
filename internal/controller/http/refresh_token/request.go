@@ -1,15 +1,3 @@
-package refreshtoken
-
-import "errors"
-
-type requestBody struct {
-	RefreshToken string `json:"refreshToken"`
-}
-
-func (r *requestBody) validate() error {
-	if r.RefreshToken == "" {
-		return errors.New("empty refresh token")
-	}
-
-	return nil
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:27840f91009c9d54a38159f443183ef05154e23902570e17540c676312ed688a
+size 240
