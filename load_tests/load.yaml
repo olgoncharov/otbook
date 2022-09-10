@@ -5,11 +5,11 @@ overload:
 phantom:
   address: 127.0.0.1:8000
   ammofile: ammo.txt
-  instances: 20000
   load_profile:
-    load_type: rps
-    schedule: line(1, 10, 2s) const(10, 20s) line(10, 100, 5s) const(100, 20s) line(100, 1000, 5s) const(1000, 10s)
-  timeout: 20s
+    load_type: instances
+    schedule: step(1, 1000, 50, 5s)
+  instances: 100
+  loop: 11000
 console:
   enabled: true
 telegraf:
