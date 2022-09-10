@@ -3,7 +3,6 @@ package app
 import (
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gorilla/mux"
 	friends "github.com/olgoncharov/otbook/internal/controller/http/friends"
@@ -86,10 +85,7 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 	).Methods(http.MethodGet, http.MethodPost)
 
 	return &http.Server{
-		Addr:         cfg.HTTPServerAddr(),
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-
+		Addr:    cfg.HTTPServerAddr(),
 		Handler: cors.AllowAll().Handler(router),
 	}
 }

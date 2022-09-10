@@ -6,11 +6,16 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/olgoncharov/otbook/internal/entity"
 	dto "github.com/olgoncharov/otbook/internal/repository/dto"
 	repoErrors "github.com/olgoncharov/otbook/internal/repository/errors"
+)
+
+const (
+	profilesSearchQueryTimeout = 15 * time.Second
 )
 
 func (r *Repository) CreateProfile(ctx context.Context, regInfo dto.RegistrationInfo) error {
@@ -219,6 +224,9 @@ func (r *Repository) CheckUsersExistence(ctx context.Context, usernames ...strin
 }
 
 func (r *Repository) SearchProfiles(ctx context.Context, firstNamePrefix, lastNamePrefix string) ([]dto.ProfileShortInfo, error) {
+	ctx, cancel := context.WithTimeout(ctx, profilesSearchQueryTimeout)
+	defer cancel()
+
 	profiles := make([]dto.ProfileShortInfo, 0)
 
 	rows, err := r.db.QueryContext(ctx,
