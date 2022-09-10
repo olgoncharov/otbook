@@ -237,7 +237,8 @@ func (r *Repository) SearchProfiles(ctx context.Context, firstNamePrefix, lastNa
 		FROM profiles
 		WHERE
 			first_name LIKE ? AND
-			last_name LIKE ?`,
+			last_name LIKE ?
+		ORDER BY user`,
 		firstNamePrefix+"%",
 		lastNamePrefix+"%",
 	)
