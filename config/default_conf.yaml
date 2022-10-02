@@ -1,9 +1,24 @@
 database:
-  host: "localhost"
-  port: "3306"
-  user: "admin"
-  password: "admin"
-  db_name: "otbook"
+  - host: "localhost"
+    port: "3306"
+    user: "admin"
+    password: "admin"
+    db_name: "otbook"
+    role: master
+
+  - host: "localhost"
+    port: "3307"
+    user: "admin"
+    password: "admin"
+    db_name: "otbook"
+    role: replica
+
+  - host: "localhost"
+    port: "3308"
+    user: "admin"
+    password: "admin"
+    db_name: "otbook"
+    role: replica
 
 jwt:
   access_token_ttl: 3600
