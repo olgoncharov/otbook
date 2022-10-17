@@ -2,6 +2,6 @@
 bin/
 vendor/
 
-load_tests/logs/
-load_tests/*.log
+load_tests/*/logs/
+load_tests/*/*.log
 load_tests/overload_token.txt

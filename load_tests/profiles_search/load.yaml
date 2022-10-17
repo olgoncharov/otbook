@@ -1,0 +1,24 @@
+phantom:
+  address: 127.0.0.1:8000
+  ammofile: ammo.txt
+  load_profile:
+    load_type: instances
+    schedule: step(1, 1000, 50, 5s)
+  instances: 1000
+  loop: 11000
+
+influx:
+  enabled: true
+  address: http://127.0.0.1:8086
+  bucket: otbook_load_test
+  organization: otus
+  token: pa66siuKKL_xYQdqrdwCP2JQCJYX5J-wkso9iWBVT6rjjXVaSBUY9kXtaxg63lud51Cl-QumwptTKDvnk06e2A==
+
+console:
+  enabled: false
+
+overload:
+  enabled: false
+
+telegraf:
+  enabled: false
