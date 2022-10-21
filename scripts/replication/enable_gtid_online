@@ -1,0 +1,33 @@
+#!/bin/bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source $SCRIPT_DIR/config
+
+function exec_on_each_host {
+docker container exec $MASTER_CONTAINER mysql --user=$MASTER_USER --password=$MASTER_PASSWORD \
+    --execute="$1"
+exec_on_each_replica "$1"
+}
+
+function exec_on_each_replica 
+for i in $(seq 1 $REPLICAS_COUNT)
+do
+    CONTAINER_VAR=REPLICA_${i}_CONTAINER
+    USER_VAR=REPLICA_${i}_USER
+    PASSWORD_VAR=REPLICA_${i}_PASSWORD
+
+    docker container exec ${!CONTAINER_VAR} mysql --user=${!USER_VAR} --password=${!PASSWORD_VAR} \
+        --execute="$1"
+done
+
+exec_on_each_host "SET @@GLOBAL.ENFORCE_GTID_CONSISTENCY = WARN;"
+
+exec_on_each_host "SET @@GLOBAL.ENFORCE_GTID_CONSISTENCY = ON;"
+
+exec_on_each_host "SET @@GLOBAL.GTID_MODE = OFF_PERMISSIVE;"
+
+exec_on_each_host "SET @@GLOBAL.GTID_MODE = ON_PERMISSIVE;"
+
+exec_on_each_host "SET @@GLOBAL.GTID_MODE = ON;"
+
+exec_on_each_replica "STOP REPLICA;CHANGE REPLICATION SOURCE TO SOURCE_AUTO_POSITION = 1;START REPLICA"
