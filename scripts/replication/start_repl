@@ -1,14 +1,13 @@
 #!/bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source $SCRIPT_DIR/config
+source $SCRIPT_DIR/functions
 
 # creating a user for replication
-docker container exec $MASTER_CONTAINER mysql --user=$MASTER_USER --password=$MASTER_PASSWORD \
-    --execute="CREATE USER '$REPL_USER_NAME'@'%' IDENTIFIED BY '$REPL_USER_PASSWORD';GRANT REPLICATION SLAVE ON *.* TO '$REPL_USER_NAME'@'%';"
+exec_on_master "CREATE USER '$REPL_USER_NAME'@'%' IDENTIFIED BY '$REPL_USER_PASSWORD';GRANT REPLICATION SLAVE ON *.* TO '$REPL_USER_NAME'@'%';"
 
 # obtaining the replication source binary log coordinates
-LOG_COORDINATES=$(docker container exec $MASTER_CONTAINER mysql --user=$MASTER_USER --password=$MASTER_PASSWORD --execute='SHOW MASTER STATUS;' | awk '{print $1":"$2}' | tail -n 1)
+LOG_COORDINATES=$(exec_on_master 'SHOW MASTER STATUS;' | awk '{print $1":"$2}' | tail -n 1)
 LOG_FILE=$(echo $LOG_COORDINATES | cut -f 1 -d :)
 LOG_POS=$(echo $LOG_COORDINATES | cut -f 2 -d :)
 

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+MASTER_CONTAINER=otbook-db_alpha-1
+MASTER_USER=root
+MASTER_PASSWORD=123456
+SOURCE_HOST=db_alpha
+
+REPL_USER_NAME=repl
+REPL_USER_PASSWORD=123456
+
+REPLICA_1_CONTAINER=otbook-db_bravo-1
+REPLICA_1_USER=root
+REPLICA_1_PASSWORD=123456
+
+REPLICA_2_CONTAINER=otbook-db_charlie-1
+REPLICA_2_USER=root
+REPLICA_2_PASSWORD=123456
+
+REPLICAS_COUNT=2
+
+function exec_on_each_replica 
+for i in $(seq 1 $REPLICAS_COUNT)
+do
+    CONTAINER_VAR=REPLICA_${i}_CONTAINER
+    USER_VAR=REPLICA_${i}_USER
+    PASSWORD_VAR=REPLICA_${i}_PASSWORD
+
+    docker container exec ${!CONTAINER_VAR} mysql --user=${!USER_VAR} --password=${!PASSWORD_VAR} \
+        --execute="$1"
+done
+
+function exec_on_master {
+docker container exec $MASTER_CONTAINER mysql --user=$MASTER_USER --password=$MASTER_PASSWORD \
+    --execute="$1"
+}
+
+function exec_on_each_host {
+exec_on_master "$1"
+exec_on_each_replica "$1"
+}
