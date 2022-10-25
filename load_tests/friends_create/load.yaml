@@ -1,0 +1,33 @@
+phantom:
+  enabled: false
+  # address: 127.0.0.1:8000
+  # ammofile: ammo.txt
+  # load_profile:
+  #   load_type: instances
+  #   schedule: step(1, 1000, 50, 5s)
+  # instances: 1000
+  # writelog: proto_warning
+
+pandora:
+  enabled: true
+  package: yandextank.plugins.Pandora
+  config_file: pandora_config.yaml
+  pandora_cmd: /usr/bin/pandora
+
+influx:
+  enabled: false
+  # address: http://127.0.0.1:8086
+  # bucket: otbook_load_test
+  # organization: otus
+  # token: pa66siuKKL_xYQdqrdwCP2JQCJYX5J-wkso9iWBVT6rjjXVaSBUY9kXtaxg63lud51Cl-QumwptTKDvnk06e2A==
+
+console:
+  enabled: false
+
+overload:
+  enabled: true
+  package: yandextank.plugins.DataUploader
+  token_file: overload_token.txt
+
+telegraf:
+  enabled: false
