@@ -1,0 +1,16 @@
+#!/bin/bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source $SCRIPT_DIR/functions
+
+exec_on_each_host "SET @@GLOBAL.ENFORCE_GTID_CONSISTENCY = WARN;"
+
+exec_on_each_host "SET @@GLOBAL.ENFORCE_GTID_CONSISTENCY = ON;"
+
+exec_on_each_host "SET @@GLOBAL.GTID_MODE = OFF_PERMISSIVE;"
+
+exec_on_each_host "SET @@GLOBAL.GTID_MODE = ON_PERMISSIVE;"
+
+exec_on_each_host "SET @@GLOBAL.GTID_MODE = ON;"
+
+exec_on_each_replica "STOP REPLICA;CHANGE REPLICATION SOURCE TO SOURCE_AUTO_POSITION = 1;START REPLICA;"

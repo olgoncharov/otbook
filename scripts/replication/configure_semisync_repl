@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source $SCRIPT_DIR/functions
+
+exec_on_master "INSTALL PLUGIN rpl_semi_sync_source SONAME 'semisync_source.so';"
+exec_on_each_replica "INSTALL PLUGIN rpl_semi_sync_replica SONAME 'semisync_replica.so';"
+
+exec_on_master "SET GLOBAL rpl_semi_sync_source_enabled = 1;"
+exec_on_each_replica "SET GLOBAL rpl_semi_sync_replica_enabled = 1;STOP REPLICA IO_THREAD;START REPLICA IO_THREAD;"

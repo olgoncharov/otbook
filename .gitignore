@@ -1,7 +1,8 @@
 .vscode/
 bin/
 vendor/
+**/__pycache__/
 
-load_tests/logs/
-load_tests/*.log
-load_tests/overload_token.txt
+load_tests/*/logs/
+load_tests/*/*.log
+overload_token.txt

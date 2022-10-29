@@ -1,0 +1,21 @@
+pools:
+  - id: HTTP pool
+    gun:
+      type: http
+      target: 127.0.0.1:8000
+    ammo:
+      type: raw
+      file: ./ammo.txt
+    result:
+      type: phout
+      destination: ./phout.log
+
+    rps:
+      type: line
+      from: 1
+      to: 500
+      duration: 2m
+
+    startup:
+      type: once
+      times: 10000

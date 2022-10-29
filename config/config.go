@@ -4,18 +4,10 @@ import "github.com/ilyakaznacheev/cleanenv"
 
 type (
 	Config struct {
-		DB       DBConfig       `yaml:"database"`
-		JWT      JWTConfig      `yaml:"jwt"`
-		Password PasswordConfig `yaml:"password"`
-		HTTP     HTTPConfig     `yaml:"http"`
-	}
-
-	DBConfig struct {
-		Host     string `yaml:"host" env:"DB_HOST"`
-		Port     string `yaml:"port" env:"DB_PORT"`
-		User     string `yaml:"user" env:"DB_USER"`
-		Password string `yaml:"password" env:"DB_PASSWORD"`
-		DBName   string `yaml:"db_name" env:"DB_NAME"`
+		DB       []DBInstanceConfig `yaml:"database"`
+		JWT      JWTConfig          `yaml:"jwt"`
+		Password PasswordConfig     `yaml:"password"`
+		HTTP     HTTPConfig         `yaml:"http"`
 	}
 
 	JWTConfig struct {
@@ -41,31 +33,15 @@ func NewConfigFromFile(filePath string) (*Config, error) {
 		return nil, err
 	}
 
+	if dbInstancesConfig := readDBInstancesConfigFromEnv(); dbInstancesConfig != nil {
+		cfg.DB = dbInstancesConfig
+	}
+
 	return &cfg, nil
 }
 
 func NewDefaultConfig() (*Config, error) {
 	return NewConfigFromFile("./config/default_conf.yaml")
-}
-
-func (c *Config) DBHost() string {
-	return c.DB.Host
-}
-
-func (c *Config) DBPort() string {
-	return c.DB.Port
-}
-
-func (c *Config) DBUser() string {
-	return c.DB.User
-}
-
-func (c *Config) DBPassword() string {
-	return c.DB.Password
-}
-
-func (c *Config) DBName() string {
-	return c.DB.DBName
 }
 
 func (c *Config) JWTAccessTokenTTL() uint64 {

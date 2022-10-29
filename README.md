@@ -36,6 +36,13 @@ cd otbook
 docker compose up -d
 ```
 
+4. Включите репликацию с помощью скрипта `scripts/replication/start_repl`
+
+```bash
+./scripts/replication/start_repl
+```
+
+
 Документация к API доступна по адресу http://localhost:7000/.
 
 В папке `/examples/postman/` находится коллекция Postman с примерами запросов. В целях тестирования база уже наполнена данными о 1000 профилях пользователей. Для выполнения запросов, доступных только авторизованным пользователям, необходимо получить JWT токен (endpoint `/api/v1/auth/login/`) и передавать его в заголовке `Authorization` в виде `Bearer <access token>`

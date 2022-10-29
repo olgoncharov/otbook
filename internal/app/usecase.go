@@ -31,21 +31,22 @@ type useCases struct {
 
 func initUsecases(
 	cfg configer,
-	repo *mysql.Repository,
+	writeRepo *mysql.Repository,
+	readRepo *mysql.Repository,
 	hashGenerator *hash.HashGenerator,
 	passwordChecker *hash.HashChecker,
 	tokenGenerator *jwt.TokenGenerator,
 	nowFn func() time.Time,
 ) useCases {
 	return useCases{
-		signup:            create.NewHandler(repo, hashGenerator),
-		login:             login.NewHandler(repo, passwordChecker, tokenGenerator, cfg, nowFn),
-		refreshToken:      refreshToken.NewHandler(repo, tokenGenerator, cfg, nowFn),
-		getUserProfile:    getUserProfile.NewHandler(repo),
-		updateUserProfile: updateUserProfile.NewHandler(repo),
-		profilesList:      profilesList.NewHandler(repo),
-		profilesSearch:    profilesSearch.NewHandler(repo),
-		friendsList:       friendsList.NewHandler(repo),
-		becomeFriends:     becomeFriends.NewHandler(repo, repo),
+		signup:            create.NewHandler(writeRepo, hashGenerator),
+		login:             login.NewHandler(writeRepo, passwordChecker, tokenGenerator, cfg, nowFn),
+		refreshToken:      refreshToken.NewHandler(writeRepo, tokenGenerator, cfg, nowFn),
+		getUserProfile:    getUserProfile.NewHandler(readRepo),
+		updateUserProfile: updateUserProfile.NewHandler(writeRepo),
+		profilesList:      profilesList.NewHandler(readRepo),
+		profilesSearch:    profilesSearch.NewHandler(readRepo),
+		friendsList:       friendsList.NewHandler(readRepo),
+		becomeFriends:     becomeFriends.NewHandler(writeRepo, writeRepo),
 	}
 }

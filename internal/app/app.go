@@ -3,9 +3,11 @@ package app
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/olgoncharov/otbook/config"
 	"github.com/olgoncharov/otbook/internal/pkg/hash"
 	"github.com/olgoncharov/otbook/internal/pkg/jwt"
 	"github.com/olgoncharov/otbook/internal/repository/mysql"
@@ -14,16 +16,13 @@ import (
 
 type (
 	App struct {
-		httpServer *http.Server
-		db         *sql.DB
+		httpServer    *http.Server
+		dbConnections []*sql.DB
 	}
 
 	configer interface {
-		DBHost() string
-		DBPort() string
-		DBUser() string
-		DBPassword() string
-		DBName() string
+		MasterDBConfig() (config.DBInstanceConfig, error)
+		ReplicaConfigs() []config.DBInstanceConfig
 
 		JWTAccessTokenTTL() uint64
 		JWTRefreshTokenTTL() uint64
@@ -35,25 +34,42 @@ type (
 	}
 )
 
-func NewApp(cfg configer) *App {
-	db := InitDB(cfg)
-	repo := mysql.NewRepository(db)
+func NewApp(cfg configer) (*App, error) {
+	masterDBConfig, err := cfg.MasterDBConfig()
+	if err != nil {
+		return nil, fmt.Errorf("invalid config: %w", err)
+	}
+	masterDB, err := initDB(masterDBConfig)
+	if err != nil {
+		return nil, fmt.Errorf("can't connect to db: %w", err)
+	}
+	writeRepo := mysql.NewRepository(masterDB)
+	dbConnections := []*sql.DB{masterDB}
 
-	nowFn := func() time.Time {
-		return time.Now()
+	var readRepo *mysql.Repository
+	replicaConfigs := cfg.ReplicaConfigs()
+	if len(replicaConfigs) > 0 {
+		replicaDB, err := initDB(replicaConfigs[0])
+		if err != nil {
+			return nil, fmt.Errorf("can't connect to db: %w", err)
+		}
+		readRepo = mysql.NewRepository(replicaDB)
+		dbConnections = append(dbConnections, replicaDB)
+	} else {
+		readRepo = writeRepo
 	}
 
 	passwordChecker := hash.NewHashChecker()
 	hashGenerator := hash.NewHashGenerator(cfg.PasswordHashGenerationCost())
-	tokenGenerator := jwt.NewTokenGenerator(cfg, nowFn)
+	tokenGenerator := jwt.NewTokenGenerator(cfg, time.Now)
 
-	uc := initUsecases(cfg, repo, hashGenerator, passwordChecker, tokenGenerator, nowFn)
+	uc := initUsecases(cfg, writeRepo, readRepo, hashGenerator, passwordChecker, tokenGenerator, time.Now)
 	httpServer := initHTTPServer(cfg, uc)
 
 	return &App{
-		httpServer: httpServer,
-		db:         db,
-	}
+		httpServer:    httpServer,
+		dbConnections: dbConnections,
+	}, nil
 }
 
 func (a *App) Run() {
@@ -70,8 +86,10 @@ func (a *App) Shutdown(ctx context.Context) {
 		log.Err(err)
 	}
 
-	err = a.db.Close()
-	if err != nil {
-		log.Err(err)
+	for _, db := range a.dbConnections {
+		err = db.Close()
+		if err != nil {
+			log.Err(err)
+		}
 	}
 }

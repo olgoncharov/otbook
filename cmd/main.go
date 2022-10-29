@@ -19,7 +19,10 @@ func main() {
 		log.Fatal().Msgf("can't read config: %s", err.Error())
 	}
 
-	a := app.NewApp(cfg)
+	a, err := app.NewApp(cfg)
+	if err != nil {
+		log.Fatal().Msgf("can't init app: %s", err.Error())
+	}
 	a.Run()
 
 	sig := make(chan os.Signal, 1)

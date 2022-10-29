@@ -1,0 +1,35 @@
+#!/bin/bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source $SCRIPT_DIR/functions
+
+# creating a user for replication
+exec_on_master "CREATE USER '$REPL_USER_NAME'@'%' IDENTIFIED BY '$REPL_USER_PASSWORD';GRANT REPLICATION SLAVE ON *.* TO '$REPL_USER_NAME'@'%';"
+
+# obtaining the replication source binary log coordinates
+LOG_COORDINATES=$(exec_on_master 'SHOW MASTER STATUS;' | awk '{print $1":"$2}' | tail -n 1)
+LOG_FILE=$(echo $LOG_COORDINATES | cut -f 1 -d :)
+LOG_POS=$(echo $LOG_COORDINATES | cut -f 2 -d :)
+
+# making data snapshot
+docker container exec $MASTER_CONTAINER mysqldump --user=$MASTER_USER --password=$MASTER_PASSWORD --databases otbook --source-data > dbdump.sql
+
+# running each replica
+for i in $(seq 1 $REPLICAS_COUNT)
+do
+    CONTAINER_VAR=REPLICA_${i}_CONTAINER
+    USER_VAR=REPLICA_${i}_USER
+    PASSWORD_VAR=REPLICA_${i}_PASSWORD
+
+    docker container exec -i ${!CONTAINER_VAR} mysql --user=${!USER_VAR} --password=${!PASSWORD_VAR} otbook < dbdump.sql
+    docker container exec ${!CONTAINER_VAR} mysql --user=${!USER_VAR} --password=${!PASSWORD_VAR} --execute "CHANGE REPLICATION SOURCE TO
+            SOURCE_HOST='${SOURCE_HOST}',
+            SOURCE_USER='${REPL_USER_NAME}',
+            SOURCE_PASSWORD='${REPL_USER_PASSWORD}',
+            SOURCE_LOG_FILE='${LOG_FILE}',
+            SOURCE_LOG_POS=${LOG_POS},
+            GET_SOURCE_PUBLIC_KEY=1;
+            START REPLICA"
+done
+
+rm dbdump.sql
