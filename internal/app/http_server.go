@@ -10,6 +10,7 @@ import (
 	"github.com/olgoncharov/otbook/internal/controller/http/middleware"
 	myfriends "github.com/olgoncharov/otbook/internal/controller/http/my_friends"
 	myprofile "github.com/olgoncharov/otbook/internal/controller/http/my_profile"
+	"github.com/olgoncharov/otbook/internal/controller/http/posts"
 	"github.com/olgoncharov/otbook/internal/controller/http/profile"
 	profileslist "github.com/olgoncharov/otbook/internal/controller/http/profiles_list"
 	profilesSearch "github.com/olgoncharov/otbook/internal/controller/http/profiles_search"
@@ -27,7 +28,10 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 		Str("component", "http").
 		Logger()
 
-	linkBuilder := utils.NewLinkBuilder("http", "/api/v1/profiles/%s")
+	linkBuilder := utils.NewLinkBuilder(
+		"/api/v1/profiles/%s",
+		"/api/v1/posts/%d",
+	)
 
 	tokenValidator := jwt.NewTokenValidator(cfg)
 	jwtMiddleware := middleware.NewJWTMiddleware(tokenValidator, logger)
@@ -83,6 +87,16 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 		"/profiles/{username}/friends",
 		friends.NewController(uc.friendsList, uc.addFriend, uc.deleteFriend, logger.With().Str("path", "/profiles/{username}/friends").Logger()),
 	).Methods(http.MethodGet, http.MethodPost, http.MethodDelete)
+
+	subRouterAuth.Handle(
+		"/posts",
+		posts.NewListController(uc.postsList, uc.createPost, linkBuilder, logger.With().Str("path", "/posts").Logger()),
+	).Methods(http.MethodGet, http.MethodPost)
+
+	subRouterAuth.Handle(
+		"/posts/{id}",
+		posts.NewObjectController(uc.getPost, linkBuilder, logger.With().Str("path", "/posts/{id}").Logger()),
+	).Methods(http.MethodGet)
 
 	return &http.Server{
 		Addr:    cfg.HTTPServerAddr(),

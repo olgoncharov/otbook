@@ -12,6 +12,7 @@ tags:
   - name: Signup
   - name: Auth
   - name: Profiles
+  - name: Posts
 
 paths:
   /signup:
@@ -404,6 +405,112 @@ paths:
         401:
           $ref: '#/components/responses/Unauthorized'
 
+  /posts:
+    get:
+      tags:
+        - Posts
+      summary: Список всех постов
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostShort'
+                  totalCount:
+                    type: integer
+        400:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Posts
+      summary: Создать новый пост
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Данные поста
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                text:
+                  type: string
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        400:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: Содержимое поста
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Идентификатор поста
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: Пост не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   securitySchemes:
     BearerAuth:
@@ -429,6 +536,42 @@ components:
           type: string
         hobby:
           type: string
+
+    Post:
+      type: object
+      properties:
+        author:
+          type: string
+        title:
+          type: string
+        text:
+          type: string
+        created_at:
+          type: string
+          format: date
+        links:
+          type: object
+          properties:
+            author:
+              type: string
+
+    PostShort:
+      type: object
+      properties:
+        author:
+          type: string
+        title:
+          type: string
+        created_at:
+          type: string
+          format: date
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+            author:
+              type: string
 
     Error:
       type: object

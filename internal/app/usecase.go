@@ -11,6 +11,9 @@ import (
 	addFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/add"
 	deleteFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/delete"
 	friendsList "github.com/olgoncharov/otbook/internal/usecase/friends/query/list"
+	createPost "github.com/olgoncharov/otbook/internal/usecase/post/command/create"
+	postsList "github.com/olgoncharov/otbook/internal/usecase/post/query/full_list"
+	getPost "github.com/olgoncharov/otbook/internal/usecase/post/query/single_post"
 	"github.com/olgoncharov/otbook/internal/usecase/profile/command/create"
 	updateUserProfile "github.com/olgoncharov/otbook/internal/usecase/profile/command/update"
 	profilesList "github.com/olgoncharov/otbook/internal/usecase/profile/query/full_list"
@@ -29,6 +32,9 @@ type useCases struct {
 	friendsList       *friendsList.Handler
 	addFriend         *addFriend.Handler
 	deleteFriend      *deleteFriend.Handler
+	postsList         *postsList.Handler
+	getPost           *getPost.Handler
+	createPost        *createPost.Handler
 }
 
 func initUsecases(
@@ -51,5 +57,8 @@ func initUsecases(
 		friendsList:       friendsList.NewHandler(readRepo),
 		addFriend:         addFriend.NewHandler(writeRepo, readRepo),
 		deleteFriend:      deleteFriend.NewHandler(writeRepo, readRepo),
+		postsList:         postsList.NewHandler(readRepo),
+		getPost:           getPost.NewHandler(readRepo),
+		createPost:        createPost.NewHandler(writeRepo, nowFn),
 	}
 }
