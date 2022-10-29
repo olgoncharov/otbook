@@ -11,6 +11,7 @@ import (
 	"github.com/olgoncharov/otbook/internal/entity"
 	"github.com/olgoncharov/otbook/internal/pkg/types"
 	addFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/add"
+	deleteFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/delete"
 	"github.com/olgoncharov/otbook/internal/usecase/friends/query/list"
 	"github.com/rs/zerolog"
 )
@@ -22,19 +23,29 @@ type (
 	addFriendUseCase interface {
 		Handle(ctx context.Context, command addFriend.Command) error
 	}
+	deleteFriendUseCase interface {
+		Handle(ctx context.Context, command deleteFriend.Command) error
+	}
 
 	Controller struct {
-		getFriendsUseCase getFriendsUseCase
-		addFriendUseCase  addFriendUseCase
-		logger            zerolog.Logger
+		getFriendsUseCase   getFriendsUseCase
+		addFriendUseCase    addFriendUseCase
+		deleteFriendUseCase deleteFriendUseCase
+		logger              zerolog.Logger
 	}
 )
 
-func NewController(getUCase getFriendsUseCase, addFriendUCase addFriendUseCase, logger zerolog.Logger) *Controller {
+func NewController(
+	getUCase getFriendsUseCase,
+	addFriendUCase addFriendUseCase,
+	deleteFriendUCase deleteFriendUseCase,
+	logger zerolog.Logger,
+) *Controller {
 	return &Controller{
-		getFriendsUseCase: getUCase,
-		addFriendUseCase:  addFriendUCase,
-		logger:            logger,
+		getFriendsUseCase:   getUCase,
+		addFriendUseCase:    addFriendUCase,
+		deleteFriendUseCase: deleteFriendUCase,
+		logger:              logger,
 	}
 }
 
@@ -44,6 +55,8 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		c.serveGET(w, r)
 	case http.MethodPost:
 		c.servePOST(w, r)
+	case http.MethodDelete:
+		c.serveDelete(w, r)
 	}
 }
 
@@ -63,6 +76,31 @@ func (c *Controller) servePOST(w http.ResponseWriter, r *http.Request) {
 
 	if errors.Is(err, addFriend.ErrSelfFriendship) || errors.Is(err, addFriend.ErrAlreadyFriends) {
 		utils.WriteJSONError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err != nil {
+		c.logger.Error().Err(err).Msg("")
+		utils.WriteJSONError(w, utils.ErrInternal.Error(), http.StatusInternalServerError)
+
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("{}"))
+}
+
+func (c *Controller) serveDelete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	reqVars := mux.Vars(r)
+
+	err := c.deleteFriendUseCase.Handle(ctx, deleteFriend.Command{
+		User:   utils.GetUsernameFromContext(ctx),
+		Friend: reqVars["username"],
+	})
+
+	if errors.Is(err, deleteFriend.ErrUserNotFound) {
+		utils.WriteJSONError(w, err.Error(), http.StatusNotFound)
 		return
 	}
 

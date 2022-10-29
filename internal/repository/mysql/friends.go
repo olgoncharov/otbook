@@ -22,10 +22,24 @@ func (r *Repository) AddFriend(ctx context.Context, user, newFriend string) erro
 
 	if err != nil {
 		if errors.As(err, &mysqlErr) && mysqlErr.Number == duplicateEntryErrorCode {
-			return fmt.Errorf("CreateFriends: %w", repoErrors.ErrUniqueConstraintViolated)
+			return fmt.Errorf("AddFriend: %w", repoErrors.ErrUniqueConstraintViolated)
 		}
 
-		return fmt.Errorf("CreateFriends: %w", err)
+		return fmt.Errorf("AddFriend: %w", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) DeleteFriend(ctx context.Context, user, friend string) error {
+	_, err := r.db.ExecContext(
+		ctx,
+		`DELETE FROM friends WHERE user = ? AND friend = ?`,
+		user, friend,
+	)
+
+	if err != nil {
+		return fmt.Errorf("DeleteFriend: %w", err)
 	}
 
 	return nil

@@ -345,6 +345,32 @@ paths:
         404:
           $ref: '#/components/responses/UserNotFound'
 
+    delete:
+      tags:
+        - Profiles
+      summary: "Удалить пользователя из друзей"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Имя пользователя
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/UserNotFound'
+ 
   /me/friends:
     get:
       tags:

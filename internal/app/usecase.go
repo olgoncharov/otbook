@@ -9,6 +9,7 @@ import (
 	"github.com/olgoncharov/otbook/internal/usecase/access/command/login"
 	refreshToken "github.com/olgoncharov/otbook/internal/usecase/access/command/refresh_token"
 	addFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/add"
+	deleteFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/delete"
 	friendsList "github.com/olgoncharov/otbook/internal/usecase/friends/query/list"
 	"github.com/olgoncharov/otbook/internal/usecase/profile/command/create"
 	updateUserProfile "github.com/olgoncharov/otbook/internal/usecase/profile/command/update"
@@ -27,6 +28,7 @@ type useCases struct {
 	profilesSearch    *profilesSearch.Handler
 	friendsList       *friendsList.Handler
 	addFriend         *addFriend.Handler
+	deleteFriend      *deleteFriend.Handler
 }
 
 func initUsecases(
@@ -47,6 +49,7 @@ func initUsecases(
 		profilesList:      profilesList.NewHandler(readRepo),
 		profilesSearch:    profilesSearch.NewHandler(readRepo),
 		friendsList:       friendsList.NewHandler(readRepo),
-		addFriend:         addFriend.NewHandler(writeRepo, writeRepo),
+		addFriend:         addFriend.NewHandler(writeRepo, readRepo),
+		deleteFriend:      deleteFriend.NewHandler(writeRepo, readRepo),
 	}
 }

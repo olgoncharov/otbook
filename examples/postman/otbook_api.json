@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d546ea44-da79-4b8b-88d4-7207e409d190",
+		"_postman_id": "0e71fd1c-765a-4792-becd-eef0baa0cf6f",
 		"name": "Otbook API",
 		"description": "Социальная сеть Otbook",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -322,6 +322,37 @@
 			"name": "Подружиться с пользователем",
 			"request": {
 				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/profiles/:username/friends",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profiles",
+						":username",
+						"friends"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": "Altenwerth8514",
+							"description": "(Required) Имя пользователя"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить пользователя из друзей",
+			"request": {
+				"method": "DELETE",
 				"header": [
 					{
 						"key": "Accept",
