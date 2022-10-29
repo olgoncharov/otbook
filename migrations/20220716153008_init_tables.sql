@@ -27,11 +27,11 @@ CREATE TABLE IF NOT EXISTS profiles (
 );
 
 CREATE TABLE IF NOT EXISTS friends (
-    user1 VARCHAR(50) NOT NULL,
-    user2 VARCHAR(50) NOT NULL,
-    FOREIGN KEY (user1) REFERENCES users(username),
-    FOREIGN KEY (user2) REFERENCES users(username),
-    CONSTRAINT unique_users UNIQUE (user1, user2)
+    user VARCHAR(50) NOT NULL,
+    friend VARCHAR(50) NOT NULL,
+    FOREIGN KEY (user) REFERENCES users(username),
+    FOREIGN KEY (friend) REFERENCES users(username),
+    CONSTRAINT unique_friends UNIQUE (user, friend)
 );
 
 -- +goose Down
