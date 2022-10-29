@@ -10,7 +10,7 @@ import (
 	"github.com/olgoncharov/otbook/internal/controller/http/utils"
 	"github.com/olgoncharov/otbook/internal/entity"
 	"github.com/olgoncharov/otbook/internal/pkg/types"
-	becomefriends "github.com/olgoncharov/otbook/internal/usecase/friends/command/become_friends"
+	addFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/add"
 	"github.com/olgoncharov/otbook/internal/usecase/friends/query/list"
 	"github.com/rs/zerolog"
 )
@@ -19,22 +19,22 @@ type (
 	getFriendsUseCase interface {
 		Handle(ctx context.Context, query list.Query) (*list.Result, error)
 	}
-	becomeFriendsUseCase interface {
-		Handle(ctx context.Context, command becomefriends.Command) error
+	addFriendUseCase interface {
+		Handle(ctx context.Context, command addFriend.Command) error
 	}
 
 	Controller struct {
-		getFriendsUseCase    getFriendsUseCase
-		becomeFriendsUseCase becomeFriendsUseCase
-		logger               zerolog.Logger
+		getFriendsUseCase getFriendsUseCase
+		addFriendUseCase  addFriendUseCase
+		logger            zerolog.Logger
 	}
 )
 
-func NewController(getUCase getFriendsUseCase, becomeFriendsUCase becomeFriendsUseCase, logger zerolog.Logger) *Controller {
+func NewController(getUCase getFriendsUseCase, addFriendUCase addFriendUseCase, logger zerolog.Logger) *Controller {
 	return &Controller{
-		getFriendsUseCase:    getUCase,
-		becomeFriendsUseCase: becomeFriendsUCase,
-		logger:               logger,
+		getFriendsUseCase: getUCase,
+		addFriendUseCase:  addFriendUCase,
+		logger:            logger,
 	}
 }
 
@@ -51,17 +51,17 @@ func (c *Controller) servePOST(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	reqVars := mux.Vars(r)
 
-	err := c.becomeFriendsUseCase.Handle(ctx, becomefriends.Command{
-		FirstUser:  utils.GetUsernameFromContext(ctx),
-		SecondUser: reqVars["username"],
+	err := c.addFriendUseCase.Handle(ctx, addFriend.Command{
+		User:      utils.GetUsernameFromContext(ctx),
+		NewFriend: reqVars["username"],
 	})
 
-	if errors.Is(err, becomefriends.ErrUserNotFound) {
+	if errors.Is(err, addFriend.ErrUserNotFound) {
 		utils.WriteJSONError(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	if errors.Is(err, becomefriends.ErrSelfFriendship) || errors.Is(err, becomefriends.ErrAlreadyFriends) {
+	if errors.Is(err, addFriend.ErrSelfFriendship) || errors.Is(err, addFriend.ErrAlreadyFriends) {
 		utils.WriteJSONError(w, err.Error(), http.StatusBadRequest)
 		return
 	}

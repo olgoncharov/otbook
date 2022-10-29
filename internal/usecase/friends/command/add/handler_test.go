@@ -1,11 +1,11 @@
-package becomefriends
+package add
 
 import (
 	"context"
 	"testing"
 
 	"github.com/gojuno/minimock/v3"
-	"github.com/olgoncharov/otbook/internal/usecase/friends/command/become_friends/mocks"
+	"github.com/olgoncharov/otbook/internal/usecase/friends/command/add/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,9 +48,9 @@ func TestHandler_Handle(t *testing.T) {
 				username1: true,
 				username2: true,
 			}, nil)
-		h.friendsRepoMock.CreateFriendsMock.Expect(ctx, username1, username2).Return(nil)
+		h.friendsRepoMock.AddFriendMock.Expect(ctx, username1, username2).Return(nil)
 
-		err := h.Handle(ctx, Command{FirstUser: username1, SecondUser: username2})
+		err := h.Handle(ctx, Command{User: username1, NewFriend: username2})
 		assert.NoError(t, err)
 	})
 
@@ -65,7 +65,7 @@ func TestHandler_Handle(t *testing.T) {
 				username2: true,
 			}, nil)
 
-		err := h.Handle(ctx, Command{FirstUser: username1, SecondUser: username2})
+		err := h.Handle(ctx, Command{User: username1, NewFriend: username2})
 		assert.ErrorIs(t, err, ErrUserNotFound)
 	})
 
@@ -80,7 +80,7 @@ func TestHandler_Handle(t *testing.T) {
 				username2: false,
 			}, nil)
 
-		err := h.Handle(ctx, Command{FirstUser: username1, SecondUser: username2})
+		err := h.Handle(ctx, Command{User: username1, NewFriend: username2})
 		assert.ErrorIs(t, err, ErrUserNotFound)
 	})
 
@@ -91,7 +91,7 @@ func TestHandler_Handle(t *testing.T) {
 		h := newTestHandler(mc)
 		h.usersRepoMock.CheckUsersExistenceMock.Expect(ctx, username1, username2).Return(nil, assert.AnError)
 
-		err := h.Handle(ctx, Command{FirstUser: username1, SecondUser: username2})
+		err := h.Handle(ctx, Command{User: username1, NewFriend: username2})
 		assert.ErrorIs(t, err, assert.AnError)
 	})
 
@@ -105,9 +105,9 @@ func TestHandler_Handle(t *testing.T) {
 				username1: true,
 				username2: true,
 			}, nil)
-		h.friendsRepoMock.CreateFriendsMock.Expect(ctx, username1, username2).Return(assert.AnError)
+		h.friendsRepoMock.AddFriendMock.Expect(ctx, username1, username2).Return(assert.AnError)
 
-		err := h.Handle(ctx, Command{FirstUser: username1, SecondUser: username2})
+		err := h.Handle(ctx, Command{User: username1, NewFriend: username2})
 		assert.ErrorIs(t, err, assert.AnError)
 	})
 }

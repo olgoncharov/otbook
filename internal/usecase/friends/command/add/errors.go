@@ -1,4 +1,4 @@
-package becomefriends
+package add
 
 import "errors"
 

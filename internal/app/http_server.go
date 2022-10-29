@@ -81,7 +81,7 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 
 	subRouterAuth.Handle(
 		"/profiles/{username}/friends",
-		friends.NewController(uc.friendsList, uc.becomeFriends, logger.With().Str("path", "/profiles/{username}/friends").Logger()),
+		friends.NewController(uc.friendsList, uc.addFriend, logger.With().Str("path", "/profiles/{username}/friends").Logger()),
 	).Methods(http.MethodGet, http.MethodPost)
 
 	return &http.Server{

@@ -1,4 +1,4 @@
-package becomefriends
+package add
 
 import (
 	"context"
@@ -14,7 +14,7 @@ type (
 	}
 
 	friendsRepo interface {
-		CreateFriends(ctx context.Context, firstUsername, secondUsername string) error
+		AddFriend(ctx context.Context, user, newFriend string) error
 	}
 
 	Handler struct {
@@ -23,8 +23,8 @@ type (
 	}
 
 	Command struct {
-		FirstUser  string
-		SecondUser string
+		User      string
+		NewFriend string
 	}
 )
 
@@ -36,24 +36,24 @@ func NewHandler(uRepo usersRepo, fRepo friendsRepo) *Handler {
 }
 
 func (h *Handler) Handle(ctx context.Context, command Command) error {
-	if command.FirstUser == command.SecondUser {
+	if command.User == command.NewFriend {
 		return ErrSelfFriendship
 	}
 
-	usersExistence, err := h.usersRepo.CheckUsersExistence(ctx, command.FirstUser, command.SecondUser)
+	usersExistence, err := h.usersRepo.CheckUsersExistence(ctx, command.User, command.NewFriend)
 	if err != nil {
 		return fmt.Errorf("can't check users existence: %w", err)
 	}
 
-	if !usersExistence[command.FirstUser] {
-		return fmt.Errorf("%w: %s", ErrUserNotFound, command.FirstUser)
+	if !usersExistence[command.User] {
+		return fmt.Errorf("%w: %s", ErrUserNotFound, command.User)
 	}
 
-	if !usersExistence[command.SecondUser] {
-		return fmt.Errorf("%w: %s", ErrUserNotFound, command.SecondUser)
+	if !usersExistence[command.NewFriend] {
+		return fmt.Errorf("%w: %s", ErrUserNotFound, command.NewFriend)
 	}
 
-	err = h.friendsRepo.CreateFriends(ctx, command.FirstUser, command.SecondUser)
+	err = h.friendsRepo.AddFriend(ctx, command.User, command.NewFriend)
 	if errors.Is(err, repoErrors.ErrUniqueConstraintViolated) {
 		return ErrAlreadyFriends
 	}

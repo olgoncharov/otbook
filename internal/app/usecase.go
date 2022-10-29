@@ -8,7 +8,7 @@ import (
 	"github.com/olgoncharov/otbook/internal/repository/mysql"
 	"github.com/olgoncharov/otbook/internal/usecase/access/command/login"
 	refreshToken "github.com/olgoncharov/otbook/internal/usecase/access/command/refresh_token"
-	becomeFriends "github.com/olgoncharov/otbook/internal/usecase/friends/command/become_friends"
+	addFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/add"
 	friendsList "github.com/olgoncharov/otbook/internal/usecase/friends/query/list"
 	"github.com/olgoncharov/otbook/internal/usecase/profile/command/create"
 	updateUserProfile "github.com/olgoncharov/otbook/internal/usecase/profile/command/update"
@@ -26,7 +26,7 @@ type useCases struct {
 	profilesList      *profilesList.Handler
 	profilesSearch    *profilesSearch.Handler
 	friendsList       *friendsList.Handler
-	becomeFriends     *becomeFriends.Handler
+	addFriend         *addFriend.Handler
 }
 
 func initUsecases(
@@ -47,6 +47,6 @@ func initUsecases(
 		profilesList:      profilesList.NewHandler(readRepo),
 		profilesSearch:    profilesSearch.NewHandler(readRepo),
 		friendsList:       friendsList.NewHandler(readRepo),
-		becomeFriends:     becomeFriends.NewHandler(writeRepo, writeRepo),
+		addFriend:         addFriend.NewHandler(writeRepo, writeRepo),
 	}
 }

@@ -10,12 +10,12 @@ import (
 	repoErrors "github.com/olgoncharov/otbook/internal/repository/errors"
 )
 
-func (r *Repository) CreateFriends(ctx context.Context, firstUsername, secondUsername string) error {
+func (r *Repository) AddFriend(ctx context.Context, user, newFriend string) error {
 	_, err := r.db.ExecContext(
 		ctx,
-		`INSERT INTO friends (user1, user2)
+		`INSERT INTO friends (user, friend)
 		 VALUES (?, ?)`,
-		firstUsername, secondUsername,
+		user, newFriend,
 	)
 
 	var mysqlErr *mysql.MySQLError
@@ -36,24 +36,20 @@ func (r *Repository) GetFriendsOfUser(ctx context.Context, username string, limi
 
 	query := queryWithLimitOffset(
 		`SELECT
-			user,
-			first_name,
-			last_name,
-			birthdate,
-			city,
-			sex,
-			hobby
-		FROM profiles
-		WHERE user IN (
-			SELECT
-				CASE WHEN user1 = ? THEN user2 ELSE user1 END AS user
-			FROM friends
-			WHERE user1 = ? OR user2 = ?
-		)
-		ORDER BY user`, limit, offset,
+			p.user,
+			p.first_name,
+			p.last_name,
+			p.birthdate,
+			p.city,
+			p.sex,
+			p.hobby
+		FROM
+			profiles AS p
+			JOIN friends AS f ON p.user = f.friend AND f.user = ?
+		ORDER BY p.user`, limit, offset,
 	)
 
-	rows, err := r.db.QueryContext(ctx, query, username, username, username)
+	rows, err := r.db.QueryContext(ctx, query, username)
 	if err != nil {
 		return nil, fmt.Errorf("GetFriendsOfUser: %w", err)
 	}
@@ -92,8 +88,8 @@ func (r *Repository) GetCountOfFriends(ctx context.Context, username string) (ui
 		ctx,
 		`SELECT count(*)
 		 FROM friends
-		 WHERE user1 = ? OR user2 = ?`,
-		username, username,
+		 WHERE user = ?`,
+		username,
 	).Scan(&totalCount)
 
 	if err != nil {
