@@ -112,3 +112,66 @@ func (r *Repository) GetCountOfFriends(ctx context.Context, username string) (ui
 
 	return totalCount, nil
 }
+
+// GetCelebrityFriends returns usernames of friends which are celebrity persons.
+func (r *Repository) GetCelebrityFriends(ctx context.Context, username string) ([]string, error) {
+	query :=
+		`SELECT
+			f.friend
+		 FROM
+		 	friends AS f
+			JOIN profiles AS p ON f.friend = p.user
+		WHERE f.user = ? AND p.is_celebrity`
+
+	rows, err := r.db.QueryContext(ctx, query, username)
+	if err != nil {
+		return nil, fmt.Errorf("GetCelebrityFriends: %w", err)
+	}
+	defer rows.Close()
+
+	friends := make([]string, 0)
+	for rows.Next() {
+		var friend string
+		if err = rows.Scan(&friend); err != nil {
+			return nil, fmt.Errorf("GetCelebrityFriends: %w", err)
+		}
+
+		friends = append(friends, friend)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetCelebrityFriends: %w", err)
+	}
+
+	return friends, nil
+}
+
+func (r *Repository) GetFollowersOfUser(ctx context.Context, username string) ([]string, error) {
+	followers := make([]string, 0)
+
+	rows, err := r.db.QueryContext(
+		ctx,
+		`SELECT user FROM friends WHERE friend = ?`,
+		username,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("GetFollowersOfUser: %w", err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var follower string
+		if err = rows.Scan(&follower); err != nil {
+			return nil, fmt.Errorf("GetFollowersOfUser: %w", err)
+		}
+
+		followers = append(followers, follower)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetFollowersOfUser: %w", err)
+	}
+
+	return followers, nil
+}

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/olgoncharov/otbook/internal/controller/http/feed"
 	friends "github.com/olgoncharov/otbook/internal/controller/http/friends"
 	"github.com/olgoncharov/otbook/internal/controller/http/login"
 	"github.com/olgoncharov/otbook/internal/controller/http/middleware"
@@ -96,6 +97,11 @@ func initHTTPServer(cfg configer, uc useCases) *http.Server {
 	subRouterAuth.Handle(
 		"/posts/{id}",
 		posts.NewObjectController(uc.getPost, linkBuilder, logger.With().Str("path", "/posts/{id}").Logger()),
+	).Methods(http.MethodGet)
+
+	subRouterAuth.Handle(
+		"/feed",
+		feed.NewController(uc.getPostFeed, linkBuilder, logger.With().Str("path", "/feed").Logger()),
 	).Methods(http.MethodGet)
 
 	return &http.Server{

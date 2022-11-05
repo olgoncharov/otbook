@@ -1,13 +1,20 @@
 package config
 
-import "github.com/ilyakaznacheev/cleanenv"
+import (
+	"path"
+	"runtime"
+
+	"github.com/ilyakaznacheev/cleanenv"
+)
 
 type (
 	Config struct {
 		DB       []DBInstanceConfig `yaml:"database"`
+		Redis    RedisConfig        `yaml:"redis"`
 		JWT      JWTConfig          `yaml:"jwt"`
 		Password PasswordConfig     `yaml:"password"`
 		HTTP     HTTPConfig         `yaml:"http"`
+		Feed     FeedConfig         `yaml:"feed"`
 	}
 
 	JWTConfig struct {
@@ -22,6 +29,17 @@ type (
 
 	HTTPConfig struct {
 		ServerAddr string `yaml:"server_addr" env:"HTTP_SERVER_ADDR"`
+	}
+
+	RedisConfig struct {
+		Addr     string `yaml:"addr" env:"REDIS_ADDR"`
+		Password string `yaml:"password" env:"REDIS_PASSWORD"`
+		DB       uint64 `ysml:"db" env:"REDIS_DB"`
+	}
+
+	FeedConfig struct {
+		Limit           int  `yaml:"limit" env:"POST_FEED_LIMIT"`
+		IsCacheDisabled bool `yaml:"is_cache_disabled" env:"POST_FEED_CACHE_DISABLED"`
 	}
 )
 
@@ -41,7 +59,9 @@ func NewConfigFromFile(filePath string) (*Config, error) {
 }
 
 func NewDefaultConfig() (*Config, error) {
-	return NewConfigFromFile("./config/default_conf.yaml")
+	_, currentFileName, _, _ := runtime.Caller(0)
+	currentDir := path.Dir(currentFileName)
+	return NewConfigFromFile(path.Join(currentDir, "default_conf.yaml"))
 }
 
 func (c *Config) JWTAccessTokenTTL() uint64 {
@@ -62,4 +82,24 @@ func (c *Config) PasswordHashGenerationCost() int {
 
 func (c *Config) HTTPServerAddr() string {
 	return c.HTTP.ServerAddr
+}
+
+func (c *Config) RedisAddr() string {
+	return c.Redis.Addr
+}
+
+func (c *Config) RedisPassword() string {
+	return c.Redis.Password
+}
+
+func (c *Config) RedisDB() uint64 {
+	return c.Redis.DB
+}
+
+func (c *Config) PostFeedLimit() int {
+	return c.Feed.Limit
+}
+
+func (c *Config) IsFeedCacheDisabled() bool {
+	return c.Feed.IsCacheDisabled
 }

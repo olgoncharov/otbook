@@ -17,6 +17,8 @@ generate-mocks:
 	minimock -i github.com/olgoncharov/otbook/internal/usecase/friends/command/add.* -o ./internal/usecase/friends/command/add/mocks -s "_mock.go"
 	minimock -i github.com/olgoncharov/otbook/internal/usecase/friends/command/delete.* -o ./internal/usecase/friends/command/delete/mocks -s "_mock.go"
 	minimock -i github.com/olgoncharov/otbook/internal/usecase/friends/query/list.* -o ./internal/usecase/friends/query/list/mocks -s "_mock.go"
+	minimock -i github.com/olgoncharov/otbook/internal/usecase/post/query/feed.* -o ./internal/usecase/post/query/feed/mocks -s "_mock.go"
+	minimock -i github.com/olgoncharov/otbook/internal/service/cache_updater.* -o ./internal/service/cache_updater/mocks -s "_mock.go"
 
 .PHONY: install-goose
 install-goose:

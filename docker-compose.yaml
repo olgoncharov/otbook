@@ -44,6 +44,11 @@ services:
     ports:
       - 8080:8080
 
+  redis:
+    image: redis:7.0.5-alpine
+    ports:
+      - 6379:6379
+
   backend:
     build:
       context: .
@@ -72,10 +77,13 @@ services:
       DB_NAME_3: "otbook"
       DB_ROLE_3: "replica"
 
+      REDIS_ADDR: "redis:6379"
+
     depends_on:
       - db_alpha
       - db_bravo
       - db_charlie
+      - redis
     restart: always
 
   swagger_ui:

@@ -20,6 +20,11 @@ database:
     db_name: "otbook"
     role: replica
 
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+
 jwt:
   access_token_ttl: 3600
   refresh_token_ttl: 108000
@@ -30,3 +35,7 @@ password:
 
 http:
   server_addr: ":8000"
+
+feed:
+  limit: 1000
+  is_cache_disabled: false

@@ -33,6 +33,11 @@ database:
     db_name: "otbook"
     role: replica
 
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+
 jwt:
   access_token_ttl: 3600
   refresh_token_ttl: 108000
@@ -58,6 +63,9 @@ http:
 		assert.EqualValues(t, "nnUdOVjyvgtsTUPguUrm", cfg.JWTSigningKey())
 		assert.EqualValues(t, 5, cfg.PasswordHashGenerationCost())
 		assert.EqualValues(t, ":8000", cfg.HTTPServerAddr())
+		assert.EqualValues(t, "localhost:6379", cfg.RedisAddr())
+		assert.EqualValues(t, "", cfg.RedisPassword())
+		assert.EqualValues(t, 0, cfg.RedisDB())
 
 		masterDBConfig, err := cfg.MasterDBConfig()
 		require.NoError(t, err)
@@ -114,6 +122,9 @@ http:
 		t.Setenv("DB_PASSWORD_3", "password3")
 		t.Setenv("DB_NAME_3", "db3")
 		t.Setenv("DB_ROLE_3", "replica")
+		t.Setenv("REDIS_ADDR", "127.0.0.1:6379")
+		t.Setenv("REDIS_PASSWORD", "secret_password")
+		t.Setenv("REDIS_DB", "4")
 
 		cfg, err := NewConfigFromFile(configPath)
 		require.NoError(t, err)
@@ -123,6 +134,9 @@ http:
 		assert.EqualValues(t, "signing_key_from_env", cfg.JWTSigningKey())
 		assert.EqualValues(t, 7, cfg.PasswordHashGenerationCost())
 		assert.EqualValues(t, ":5000", cfg.HTTPServerAddr())
+		assert.EqualValues(t, "127.0.0.1:6379", cfg.RedisAddr())
+		assert.EqualValues(t, "secret_password", cfg.RedisPassword())
+		assert.EqualValues(t, 4, cfg.RedisDB())
 
 		masterDBConfig, err := cfg.MasterDBConfig()
 		require.NoError(t, err)
