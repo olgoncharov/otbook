@@ -17,9 +17,14 @@ type (
 		AddFriend(ctx context.Context, user, newFriend string) error
 	}
 
+	cacheUpdater interface {
+		AddFriend(ctx context.Context, user string, friend string)
+	}
+
 	Handler struct {
-		usersRepo   usersRepo
-		friendsRepo friendsRepo
+		usersRepo    usersRepo
+		friendsRepo  friendsRepo
+		cacheUpdater cacheUpdater
 	}
 
 	Command struct {
@@ -28,10 +33,11 @@ type (
 	}
 )
 
-func NewHandler(uRepo usersRepo, fRepo friendsRepo) *Handler {
+func NewHandler(uRepo usersRepo, fRepo friendsRepo, cUpdater cacheUpdater) *Handler {
 	return &Handler{
-		usersRepo:   uRepo,
-		friendsRepo: fRepo,
+		usersRepo:    uRepo,
+		friendsRepo:  fRepo,
+		cacheUpdater: cUpdater,
 	}
 }
 
@@ -58,5 +64,11 @@ func (h *Handler) Handle(ctx context.Context, command Command) error {
 		return ErrAlreadyFriends
 	}
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	h.cacheUpdater.AddFriend(ctx, command.User, command.NewFriend)
+
+	return nil
 }

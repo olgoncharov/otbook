@@ -16,7 +16,7 @@ type (
 	}
 
 	linkBuilder interface {
-		BuildProfileLink(host, username string) string
+		BuildProfileLink(username string) string
 	}
 
 	Controller struct {
@@ -76,7 +76,7 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			FirstName: p.FirstName,
 			LastName:  p.LastName,
 			Links: profileLinks{
-				Self: c.linkBuilder.BuildProfileLink(r.Host, p.Username),
+				Self: c.linkBuilder.BuildProfileLink(p.Username),
 			},
 		}
 	}

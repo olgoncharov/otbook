@@ -6,11 +6,17 @@ import (
 	"github.com/olgoncharov/otbook/internal/pkg/hash"
 	"github.com/olgoncharov/otbook/internal/pkg/jwt"
 	"github.com/olgoncharov/otbook/internal/repository/mysql"
+	"github.com/olgoncharov/otbook/internal/repository/redis"
+	cacheupdater "github.com/olgoncharov/otbook/internal/service/cache_updater"
 	"github.com/olgoncharov/otbook/internal/usecase/access/command/login"
 	refreshToken "github.com/olgoncharov/otbook/internal/usecase/access/command/refresh_token"
 	addFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/add"
 	deleteFriend "github.com/olgoncharov/otbook/internal/usecase/friends/command/delete"
 	friendsList "github.com/olgoncharov/otbook/internal/usecase/friends/query/list"
+	createPost "github.com/olgoncharov/otbook/internal/usecase/post/command/create"
+	"github.com/olgoncharov/otbook/internal/usecase/post/query/feed"
+	postsList "github.com/olgoncharov/otbook/internal/usecase/post/query/full_list"
+	getPost "github.com/olgoncharov/otbook/internal/usecase/post/query/single_post"
 	"github.com/olgoncharov/otbook/internal/usecase/profile/command/create"
 	updateUserProfile "github.com/olgoncharov/otbook/internal/usecase/profile/command/update"
 	profilesList "github.com/olgoncharov/otbook/internal/usecase/profile/query/full_list"
@@ -29,12 +35,18 @@ type useCases struct {
 	friendsList       *friendsList.Handler
 	addFriend         *addFriend.Handler
 	deleteFriend      *deleteFriend.Handler
+	postsList         *postsList.Handler
+	getPost           *getPost.Handler
+	createPost        *createPost.Handler
+	getPostFeed       *feed.Handler
 }
 
 func initUsecases(
 	cfg configer,
 	writeRepo *mysql.Repository,
 	readRepo *mysql.Repository,
+	cacheRepo *redis.Repository,
+	cacheUpdater *cacheupdater.CacheUpdater,
 	hashGenerator *hash.HashGenerator,
 	passwordChecker *hash.HashChecker,
 	tokenGenerator *jwt.TokenGenerator,
@@ -49,7 +61,11 @@ func initUsecases(
 		profilesList:      profilesList.NewHandler(readRepo),
 		profilesSearch:    profilesSearch.NewHandler(readRepo),
 		friendsList:       friendsList.NewHandler(readRepo),
-		addFriend:         addFriend.NewHandler(writeRepo, readRepo),
-		deleteFriend:      deleteFriend.NewHandler(writeRepo, readRepo),
+		addFriend:         addFriend.NewHandler(writeRepo, readRepo, cacheUpdater),
+		deleteFriend:      deleteFriend.NewHandler(writeRepo, readRepo, cacheUpdater),
+		postsList:         postsList.NewHandler(readRepo),
+		getPost:           getPost.NewHandler(readRepo),
+		createPost:        createPost.NewHandler(writeRepo, cacheUpdater, nowFn),
+		getPostFeed:       feed.NewHandler(cacheRepo, readRepo, cacheUpdater, cfg),
 	}
 }

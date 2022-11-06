@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Msgf("can't init app: %s", err.Error())
 	}
-	a.Run()
+	a.Run(ctx)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)

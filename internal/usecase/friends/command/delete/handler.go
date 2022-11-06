@@ -14,9 +14,14 @@ type (
 		DeleteFriend(ctx context.Context, user, friend string) error
 	}
 
+	cacheUpdater interface {
+		DeleteFriend(ctx context.Context, user string, friend string)
+	}
+
 	Handler struct {
-		usersRepo   usersRepo
-		friendsRepo friendsRepo
+		usersRepo    usersRepo
+		friendsRepo  friendsRepo
+		cacheUpdater cacheUpdater
 	}
 
 	Command struct {
@@ -25,10 +30,11 @@ type (
 	}
 )
 
-func NewHandler(uRepo usersRepo, fRepo friendsRepo) *Handler {
+func NewHandler(uRepo usersRepo, fRepo friendsRepo, cUpdater cacheUpdater) *Handler {
 	return &Handler{
-		usersRepo:   uRepo,
-		friendsRepo: fRepo,
+		usersRepo:    uRepo,
+		friendsRepo:  fRepo,
+		cacheUpdater: cUpdater,
 	}
 }
 
@@ -46,5 +52,11 @@ func (h *Handler) Handle(ctx context.Context, command Command) error {
 		return fmt.Errorf("%w: %s", ErrUserNotFound, command.Friend)
 	}
 
-	return h.friendsRepo.DeleteFriend(ctx, command.User, command.Friend)
+	if err = h.friendsRepo.DeleteFriend(ctx, command.User, command.Friend); err != nil {
+		return err
+	}
+
+	h.cacheUpdater.DeleteFriend(ctx, command.User, command.Friend)
+
+	return nil
 }

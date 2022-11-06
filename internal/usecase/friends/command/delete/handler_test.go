@@ -12,19 +12,22 @@ import (
 type testHandler struct {
 	*Handler
 
-	usersRepoMock   *mocks.UsersRepoMock
-	friendsRepoMock *mocks.FriendsRepoMock
+	usersRepoMock    *mocks.UsersRepoMock
+	friendsRepoMock  *mocks.FriendsRepoMock
+	cacheUpdaterMock *mocks.CacheUpdaterMock
 }
 
 func newTestHandler(mc *minimock.Controller) *testHandler {
 	usersRepoMock := mocks.NewUsersRepoMock(mc)
 	friendsRepoMock := mocks.NewFriendsRepoMock(mc)
+	cacheUpdaterMock := mocks.NewCacheUpdaterMock(mc)
 
 	return &testHandler{
-		Handler: NewHandler(usersRepoMock, friendsRepoMock),
+		Handler: NewHandler(usersRepoMock, friendsRepoMock, cacheUpdaterMock),
 
-		usersRepoMock:   usersRepoMock,
-		friendsRepoMock: friendsRepoMock,
+		usersRepoMock:    usersRepoMock,
+		friendsRepoMock:  friendsRepoMock,
+		cacheUpdaterMock: cacheUpdaterMock,
 	}
 }
 
@@ -49,6 +52,7 @@ func TestHandler_Handle(t *testing.T) {
 				username2: true,
 			}, nil)
 		h.friendsRepoMock.DeleteFriendMock.Expect(ctx, username1, username2).Return(nil)
+		h.cacheUpdaterMock.DeleteFriendMock.Expect(ctx, username1, username2).Return()
 
 		err := h.Handle(ctx, Command{User: username1, Friend: username2})
 		assert.NoError(t, err)

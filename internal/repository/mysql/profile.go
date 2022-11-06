@@ -72,7 +72,8 @@ func (r *Repository) UpdateProfile(ctx context.Context, profile entity.Profile) 
 			birthdate = ?,
 			city = ?,
 			sex = ?,
-			hobby = ?
+			hobby = ?,
+			is_celebrity = ?
 		 WHERE user = ?`,
 
 		profile.FirstName,
@@ -81,6 +82,7 @@ func (r *Repository) UpdateProfile(ctx context.Context, profile entity.Profile) 
 		profile.City,
 		profile.Sex,
 		profile.Hobby,
+		profile.IsCelebrity,
 		profile.Username,
 	)
 
@@ -104,7 +106,8 @@ func (r *Repository) GetProfileByUsername(ctx context.Context, username string) 
 			birthdate,
 			city,
 			sex,
-			hobby
+			hobby,
+			is_celebrity
 		FROM profiles
 		WHERE user = ?`,
 		username,
@@ -115,6 +118,7 @@ func (r *Repository) GetProfileByUsername(ctx context.Context, username string) 
 		&profile.City,
 		&profile.Sex,
 		&profile.Hobby,
+		&profile.IsCelebrity,
 	)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -138,7 +142,8 @@ func (r *Repository) GetAllProfiles(ctx context.Context, limit, offset uint) ([]
 			birthdate,
 			city,
 			sex,
-			hobby
+			hobby,
+			is_celebrity
 		FROM profiles
 		ORDER BY user`, limit, offset)
 
@@ -159,6 +164,7 @@ func (r *Repository) GetAllProfiles(ctx context.Context, limit, offset uint) ([]
 			&profile.City,
 			&profile.Sex,
 			&profile.Hobby,
+			&profile.IsCelebrity,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("GetAllProfiles: %w", err)

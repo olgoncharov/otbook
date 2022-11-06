@@ -2,27 +2,24 @@ package utils
 
 import (
 	"fmt"
-	"net/url"
 )
 
 type LinkBuilder struct {
-	scheme             string
 	profileLinkPattern string
+	postLinkPattern    string
 }
 
-func NewLinkBuilder(scheme, profileLinkPattern string) *LinkBuilder {
+func NewLinkBuilder(profileLinkPattern, postLinkPattern string) *LinkBuilder {
 	return &LinkBuilder{
-		scheme:             scheme,
 		profileLinkPattern: profileLinkPattern,
+		postLinkPattern:    postLinkPattern,
 	}
 }
 
-func (b *LinkBuilder) BuildProfileLink(host, username string) string {
-	u := url.URL{
-		Scheme: b.scheme,
-		Host:   host,
-		Path:   fmt.Sprintf(b.profileLinkPattern, username),
-	}
+func (b *LinkBuilder) BuildProfileLink(username string) string {
+	return fmt.Sprintf(b.profileLinkPattern, username)
+}
 
-	return u.String()
+func (b *LinkBuilder) BuildPostLink(postID uint64) string {
+	return fmt.Sprintf(b.postLinkPattern, postID)
 }

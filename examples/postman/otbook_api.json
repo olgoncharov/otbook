@@ -1,411 +1,515 @@
 {
 	"info": {
-		"_postman_id": "0e71fd1c-765a-4792-becd-eef0baa0cf6f",
+		"_postman_id": "cd7c94d2-a5d0-4d48-83f3-8eebd1ed145a",
 		"name": "Otbook API",
 		"description": "Социальная сеть Otbook",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Регистрация нового пользователя",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"pereira\",\n    \"password\": \"123456\",\n    \"firstName\": \"Sebastian\",\n    \"lastName\": \"Pereira\",\n    \"birthdate\": \"1983-07-06\",\n    \"city\": \"Moscow\",\n    \"sex\": \"mail\",\n    \"hobby\": \"Fishing\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/signup",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"signup"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Мои друзья",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/me/friends?limit=50",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"me",
-						"friends"
-					],
-					"query": [
-						{
-							"key": "limit",
-							"value": "50"
+			"name": "Signup",
+			"item": [
+				{
+					"name": "Регистрация нового пользователя",
+					"request": {
+						"auth": {
+							"type": "noauth"
 						},
-						{
-							"key": "offset",
-							"value": "0",
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Получить токен по логину и паролю",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"pereira\",\n    \"password\": \"123456\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/auth/login",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Мой профиль",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/me/profile",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"me",
-						"profile"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Отредактировать мой профиль",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"firstName\": \"Sebastian\",\n    \"lastName\": \"Pereira\",\n    \"birthdate\": \"1983-07-06\",\n    \"city\": \"Moscow\",\n    \"sex\": \"mail\",\n    \"hobby\": \"Fishing\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/me/profile",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"me",
-						"profile"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Обновить токен",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"refreshToken\": \"\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/auth/refresh",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"auth",
-						"refresh"
-					]
-				},
-				"description": "Принимает refresh-токен и генерирует новый access-токен"
-			},
-			"response": []
-		},
-		{
-			"name": "Список всех профилей",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/profiles?limit=50",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"profiles"
-					],
-					"query": [
-						{
-							"key": "limit",
-							"value": "50"
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"pereira\",\n    \"password\": \"123456\",\n    \"firstName\": \"Sebastian\",\n    \"lastName\": \"Pereira\",\n    \"birthdate\": \"1983-07-06\",\n    \"city\": \"Moscow\",\n    \"sex\": \"mail\",\n    \"hobby\": \"Fishing\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "offset",
-							"value": "0",
-							"disabled": true
+						"url": {
+							"raw": "{{baseUrl}}/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"signup"
+							]
 						}
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Профиль пользователя",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/profiles/:username",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"profiles",
-						":username"
-					],
-					"variable": [
-						{
-							"key": "username",
-							"value": "Altenwerth8514",
-							"description": "(Required) Имя пользователя"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Друзья пользователя",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/profiles/:username/friends?limit=50",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"profiles",
-						":username",
-						"friends"
-					],
-					"query": [
-						{
-							"key": "limit",
-							"value": "50"
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Получить токен по логину и паролю",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"pereira\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "offset",
-							"value": "0",
-							"disabled": true
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
 						}
-					],
-					"variable": [
-						{
-							"key": "username",
-							"value": "Altenwerth8514",
-							"description": "(Required) Имя пользователя, с которым нужно подружиться"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Подружиться с пользователем",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/profiles/:username/friends",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"profiles",
-						":username",
-						"friends"
-					],
-					"variable": [
-						{
-							"key": "username",
-							"value": "Altenwerth8514",
-							"description": "(Required) Имя пользователя"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Удалить пользователя из друзей",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/profiles/:username/friends",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"profiles",
-						":username",
-						"friends"
-					],
-					"variable": [
-						{
-							"key": "username",
-							"value": "Altenwerth8514",
-							"description": "(Required) Имя пользователя"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Поиск профилей по имени и фамилии",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"firstName\": \"Leo\",\n    \"lastName\": \"Sw\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/profiles/search",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"profiles",
-						"search"
-					]
+				{
+					"name": "Обновить токен",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Принимает refresh-токен и генерирует новый access-токен"
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "Profiles",
+			"item": [
+				{
+					"name": "Мои друзья",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/me/friends?limit=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"me",
+								"friends"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Мой профиль",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/me/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"me",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Отредактировать мой профиль",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Sebastian\",\n    \"lastName\": \"Pereira\",\n    \"birthdate\": \"1983-07-06\",\n    \"city\": \"Moscow\",\n    \"sex\": \"mail\",\n    \"hobby\": \"Fishing\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/me/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"me",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Список всех профилей",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profiles?limit=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profiles"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Профиль пользователя",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profiles/:username",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profiles",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "Altenwerth8514",
+									"description": "(Required) Имя пользователя"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Друзья пользователя",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profiles/:username/friends?limit=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profiles",
+								":username",
+								"friends"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "Altenwerth8514",
+									"description": "(Required) Имя пользователя, с которым нужно подружиться"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Подружиться с пользователем",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profiles/:username/friends",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profiles",
+								":username",
+								"friends"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "Altenwerth8514",
+									"description": "(Required) Имя пользователя"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить пользователя из друзей",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profiles/:username/friends",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profiles",
+								":username",
+								"friends"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "Altenwerth8514",
+									"description": "(Required) Имя пользователя"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Поиск профилей по имени и фамилии",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Leo\",\n    \"lastName\": \"Sw\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/profiles/search",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profiles",
+								"search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Создать пост",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"some title\",\n    \"text\": \"some text\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/posts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Список постов",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/posts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Страница поста",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/posts/:post_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts",
+								":post_id"
+							],
+							"variable": [
+								{
+									"key": "post_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Лента новостей",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/feed",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"feed"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
